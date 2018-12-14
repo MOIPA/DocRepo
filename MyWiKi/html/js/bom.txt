@@ -1,0 +1,65 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-02-14T16:08:03+08:00
+
+====== bom ======
+Created 星期三 14 二月 2018
+
+Browser object model  浏览器提供的所以有的浏览器好使有的不好使
+
+window对象代表一个html文档
+window对象中方法：
+	alert
+	confirm
+	prompt
+	close
+//以上很简单 自己尝试
+	open 打开一个新窗口 : window.open(URL,name,features,replace)
+	URL:新窗口地址  name:新窗口名称(没啥用)  features:新窗口特征  replace:没有用-需不需要替换历史记录
+	返回值：新打开窗口的window对象
+	例子：var baiduWindow = window.open("http://www.baidu.com")//
+		  var baiduWindow = window.open("http://www.baidu.com","","width=200,height=100");
+
+定时器：setInterval clearInterval
+		setTimeout clearTimeout  和上面的功能用法一样只是执行完一次结束
+		
+		var id = window.setInterval("alert('aaa')",3000); //每3秒执行第一个参数
+			window.setInterval(fun1,3000);
+		function fun1(){
+			alert('bbb');
+		}
+		window.clearInterval(id);
+
+属性：
+	self 
+	parent
+	top
+	frames
+	opener
+
+**history对象：**
+	var history = window.history;
+		forward  前进
+		back 后退
+		go 前进或者后退
+	history.forward();
+	.....
+	history.go(-1)  -1:后退 1前进
+
+**location对象：**
+	代表当前页面的地址
+	属性：href  用来改变当前页面的地址
+	方法：reload（）属性当前页面
+	window.location.href= "http://www......";
+	window.location.reload(); //可填写参数，第一个参数url 刷新到url
+
+
+
+
+
+
+
+
+
+
+

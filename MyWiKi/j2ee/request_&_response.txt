@@ -1,0 +1,237 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-02-17T15:52:34+08:00
+
+====== request & response ======
+Created 星期六 17 二月 2018
+
+[[j2ee|home]]
+
+ request & response
+//----------------------------------------------------------------------------------------
+1.response 代表响应, 可以理解为一个空的箱子,我们在里面填入要发送到浏览器的内容. 服务器会把这些内容组装成http响应.
+	
+	响应首行  协议/版本号  状态码  状态码描述
+		添加状态码 和 描述
+		void setStatus(int sc)  只设置状态码
+		void setStatus(int sc, String sm)   设置状态码和描述
+		void sendError(int sc) 只设置状态码,表示错误的状态码
+		void sendError(int sc, String msg)  设置错误的状态码和描述
+	响应头
+		添加响应头
+			void setHeader(String name, String value) 设置响应头,如果key一样会覆盖
+				setIntHeader(String name, int value) 
+				setDateHeader(String name, long date) 
+
+			void addHeader(String name, String value) 设置响应头,无论如何都新增.
+				 void addIntHeader(String name, int value) 
+				 void addDateHeader(String name, long date)  
+	响应空行
+	响应正文
+		发送字节流
+			getOutputStream
+		发送字符流
+			getWriter
+			
+//==========================================================================================================
+应用.
+
+**例一: 手动向浏览器发送404**
+response.sendError(404,"找到了页面  测试404的");
+**例二: 重定向** 
+response.sendRedirect("/AServlet")
+			 **or**
+		response.setStatus(302);
+//        response.setHeader("Location","/AServlet"); 
+**例三: Refresh头.刷新** 
+		//refresh
+		response.setHeader("refresh","5;url=/AServlet");
+		response.getWriter().print("5s 后跳转");
+**例四: 发送字节流. 发送中文.**  __响应正文开始__
+		  OutputStream os = response.getOutputStream();
+		os.write("你好世界".getBytes());
+		os.close();
+**例五: 发送字符流. 发送中文.**
+		//发送中文2
+		response.setCharacterEncoding("UTF-8"); __or__ response.setContentType("text/html;charset=utf-8") 后者比较强力 让目标浏览器用同一种编码
+		response.getWriter().print("你好世界");//输出？？？说明查找的码表没有这个字
+
+字符流和字节流要注意的一个问题:
+	字节流和字符流一定不能同时使用.
+	
+**例六:使用字节流发送图片**
+		//        发送图片
+		//放在webinfo下别人无法绕过地址访问
+//        String path = getServletContext().getRealPath("/WEB-INF/test.jpg");
+//        response.getWriter().print(path);
+		//告诉浏览器流的mime类型 这里是jpg
+		response.setContentType("image/jpeg");
+//        String path = getServletContext().getRealPath("/WEB-INF/test.jpg");
+//        InputStream stream = getServletContext().getResourceAsStream("/WEB-INF/test.jpg");
+//        URL url = getServletContext().getResource("/WEB-INF/test.jpg");
+		InputStream resourceAsStream = this.getClass().getResourceAsStream("/test.jpg");
+
+
+		ServletOutputStream outputStream = response.getOutputStream();
+		byte[] buffer = new byte[1024];
+		int len = 0;
+		while((len=resourceAsStream.read(buffer))>0){
+			outputStream.write(buffer,0,len);
+			outputStream.flush();
+		}
+		resourceAsStream.close();
+//        stream.close();
+		outputStream.close();
+
+
+	}
+**例七:使用字节流发送文件(文件下载)**
+
+//=============================================================================================================
+request对象	
+	一.封装了浏览器发送来的请求信息.
+	
+
+	请求首行  请求方式 请求路径  协议/版本号
+		request.getMethod(): GET
+		request.getRequestURI(): /Day08-request/AServlet
+		request.getServletPath(): /AServlet
+		request.getContextPath(): /Day08-request
+		request.getScheme(): http
+	请求头
+//--原始方式获得请求头
+		String getHeader(String name)  
+		long getDateHeader(String name) 
+		int getIntHeader(String name)
+		Enumeration getHeaders(String name)
+		Enumeration getHeaderNames() 
+		
+//---javaee封装好的方法.
+		request.getContentLength(): -1
+		request.getContentType(): null
+		request.getLocale(): zh_CN
+		request.getQueryString(): name=tom&age=18
+		request.getRequestURL(): http://localhost:8080/Day08-request/AServlet
+		request.getRemoteAddr(): 0:0:0:0:0:0:0:1
+		request.getRemoteHost(): 0:0:0:0:0:0:0:1
+		request.getRemotePort(): 52074
+		request.getServerName(): localhost
+		request.getServerPort(): 8080
+	请求空行
+	请求正文 表单传送过来的键值对
+	
+	获得表单提交的参数.
+	1.GET  http://localhost:8080/Day08-request/AServlet?name=tom&age=18
+		乱码:只要确保编码和解码一致,就绝对没有问题.
+			1.浏览器负责编码.浏览器使用的码表就是表单所在页面的码表.
+			
+			2.服务器负责解码.服务器默认使用ISO-8859-1解码. 如下配置的URIEncoding来决定解码码表
+				 <Connector port="8080" protocol="HTTP/1.1"  URIEncoding="UTF-8"
+					connectionTimeout="20000" 
+				redirectPort="8443" />
+			如上配置会影响整个服务器不推荐.
+				我们使用如下代码解决:
+						//获得参数
+						String name = request.getParameter("name");
+						//因为服务器使用了错误的码表,那么我们按照错误的码表原路返回
+						byte[] nameByte = name.getBytes("ISO-8859-1");
+						//用正确的码表重新解码
+						String newName = new String(nameByte,"UTF-8");
+						
+						System.out.println("解决之后的:"+newName);
+			
+		
+	2.POST
+		因为Post解码是在第一次调用getParameter之前,那么解决乱码只需要在调用该方法之前设置编码:
+			request.setCharacterEncoding("UTF-8");
+		
+			String name = request.getParameter("name");
+			
+			System.out.println(name);
+			
+涉及到获得表单参数的方法还有哪些呢?
+		String getParameter 根据键获得值
+		Map getParameterMap()  获得服务器保存表单参数的容器. 就是map<String,String[]>. 泛型: habit=chi&habit=shui&habit=la
+		Enumeration getParameterNames()  获得提交的所有键
+		String[] getParameterValues(String name)  根据键获得值. 获得一键对应多个值的情况的.
+		
+
+//---------------------------------------------------------------------------------------------------------------------
+**2.request的请求转发和包含功能.**
+	**转发:**
+	  //请求转发
+			request.getRequestDispatcher("/AServlet").forward(request,response);
+		一个Servlet处理完毕交给下面的servlet(JSP)继续处理.
+	作用: 
+		在现实开发中,没有servlet转发给servlet的情况.都是由servlet转发给JSP.
+		这样可以达到分工的作用:
+			servlet: 比较适合处理业务.
+			JSP: 比较适合显示功能
+	注意问题:
+			//servlet中不要做 输出正文的动作,没有结果的
+			//如果放到前面会出现乱码.
+			//但是响应头是可以设置的.
+	
+	**包含:**
+		**//        请求包含**
+	**        request.getRequestDispatcher("AServlet").include(request,response);**
+		两个servlet(jsp)共同向浏览器输出内容.
+	作用:
+		在现实开发中,多个页面含有相同的内容,我们把相同的内容抽取到一个jsp中,在需要显示这个段内容的jsp中,包含抽取的jsp.可以达到
+		统一管理相同的内容.
+		
+3.request域的应用.
+	原理:
+		在request对象中含有一个map.这个map就是request域.
+	作用:
+		在将来开发中. 使用请求转发时,servlet处理完数据, 处理结果要交给jsp显示. 可以使用request域将处理结果有servlet带给jsp显示.
+		
+	操作:	request.以下
+		1.setAttribute  存入一个键值对
+		2.getAttribute  通过键取出值
+		3.getAttributeNames 获得域中所有键
+		4.removeAttribute 跟据键移除一个键值对		
+		
+	request的范围:
+		一个request对象对应一个request域(map).
+		系统当前有多少个request就有多少request域.
+
+//=================================================================================================================
+路径总结:
+	路径分为两种情况:
+		1.客户端路径 ==> 给浏览器用的路径
+			<form action="/Day08-request/AServlet" >
+			<a href="/Day08-request/AServlet" >
+			<img src="/Day08-request/AServlet" >
+			response.sendRedirect("/Day08-request/AServlet")
+			Refresh:3;url=/Day08-request/AServlet
+		路径写法:
+			带"/" :  "/" ==> 相对于 主机.
+				例如: 表单所在页面路径为==> http://localhost:8080/Day08-request/login.jsp ==> "/" 代表 http://localhost:8080/
+			
+			不带"/":(开发中一定不要出现不带"/"的情况).代表从当前目录找.
+				例如: 表单所在页面路径为==> http://localhost:8080/Day08-request/info/login.jsp ==> 代表 http://localhost:8080/Day08-request/info/
+		
+			
+		2.服务器端路径
+			<url-pattern> /AServlet  ==> http://localhost:8080/Day08-request/AServlet
+			request.getRequestDispatcher("/AServlet") ==> http://localhost:8080/Day08-request/AServlet
+		路径写法:
+			"/": 相对于项目.  "/"==>http://localhost:8080/Day08-request/
+ 		
+		
+		
+		
+		
+		
+		
+		
+		
+作业:
+		完成学生注册.
+	要求:
+		写一个注册页面
+		在页面点击注册按钮.将注册信息发送到servlet中.
+		在servlet中将提交的学生信息交给StudentDao保存到xml中.
+		提示用户注册成功.
+	(成功之后,要在xml中看到新注册的学生信息算完成)

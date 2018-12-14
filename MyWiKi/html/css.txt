@@ -1,0 +1,35 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-02-14T15:34:14+08:00
+
+====== css ======
+Created 星期三 14 二月 2018
+
+CSS 2.0版
+	1.层叠样式表
+	2.都是W3C发布的.
+css与页面的结合方式
+	1>style属性
+	2>style标签
+	3>link引入
+css的选择器
+	1>标签选择器 标签名称{}
+	2>ID选择器   #ID{}
+	3>CLASS选择器 .CLASSName{}
+	4>选择器分组  选择器1,选择器2...{}
+	5>伪类选择器 link visited hover active
+语法:
+		注释: /* */
+		语法:选择器{
+			属性键:属性值;
+			属性键:属性值1 属性值2 ....;
+		}
+常见属性:
+	字体属性.
+	背景系列.
+	尺寸系列. width height
+	边框系列.
+	边距系列.
+		内边距 padding
+		外边距 margin
+		

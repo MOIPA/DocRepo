@@ -1,0 +1,14 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-05-01T20:18:26+08:00
+
+====== Gson ======
+创建日期 星期二 01 五月 2018
+
+gson = new GsonBuilder()  
+				   .setLenient()// json宽松  
+				   .enableComplexMapKeySerialization()//支持Map的key为复杂对象的形式  
+				   .serializeNulls() //智能null  
+				   .setPrettyPrinting()// 调教格式  
+				   .disableHtmlEscaping() //默认是GSON把HTML 转义的  
+				   .create();

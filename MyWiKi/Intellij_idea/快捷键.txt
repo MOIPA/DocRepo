@@ -1,0 +1,23 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-05-01T21:03:38+08:00
+
+====== 快捷键 ======
+创建日期 星期二 01 五月 2018
+
+ Ctrl+Alt+L格式化代码
+Ctrl+shift+enter 格式化本行 换行
+Ctrl+shift+UP 移动到上面一行
+Ctrl+enter 处理错误，快速创建本地变量
+
+Ø  Top #10切来切去：Ctrl+Tab
+Ø  Top #9选你所想：Ctrl+W
+Ø  Top #8代码生成：Template/Postfix +Tab
+Ø  Top #7发号施令：Ctrl+Shift+A
+Ø  Top #6无处藏身：Shift+Shift
+Ø  Top #5自动完成：Ctrl+Shift+Enter
+Ø  Top #4创造万物：Alt+Insert
+太难割舍，前三名并列吧！
+Ø  Top #1智能补全：Ctrl+Shift+Space
+Ø  Top #1自我修复：Alt+Enter
+Ø  Top #1重构一切：Ctrl+Shift+Alt+T

@@ -1,0 +1,76 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-02-17T13:20:47+08:00
+
+====== ServletContext ======
+Created 星期六 17 二月 2018
+[[j2ee|home]]
+**相关对象之 ---- ServletContext**
+	1.获得: servletConfig ==> getServletContext
+	2.servletContext 的作用
+		**1> servletContext 封装了web.xml 中的配置**
+		
+		和init-param 作用差不多 只不过后者是每个servlet配置
+		
+			<context-param>
+				<param-name>name</param-name>
+				<param-value>jerry</param-value>
+			</context-param>
+			<context-param>
+				<param-name>password</param-name>
+				<param-value>1234</param-value>
+			</context-param>
+		
+					getInitParameterNames();  ==> 获得所有键
+					getInitParameter(key);  ==> 根据键获得对应的值
+		**2> servlet技术中3大域对象之一. 通讯**
+			ServletContext对应着Application(应用)域.利用了一个项目中只有一个ServletContext实例的特点.在servletContext中__放置了一个map用作数据通信.原理和一个静态类用来通讯是一个道理__
+			__域就是用来做通讯的__
+			__这个Map就是所谓域.__
+				关于域的操作,有4个.
+					放入键值对 setAttribute(key,value)
+					通过键取值 getAttribute(key)
+					通过键删除 removeAttribute(key)
+					遍历所有键 getAttributeNames()
+				application ==> servletContext
+				session ==> 
+				request ==> 
+		**3>获得项目中资源.**  比如：
+			所有servletContext中关于路径的获得,相对路径都是相对的 WebRoot(项目根)下
+				getRealPath  ==> 通过相对路径获得绝对路径
+				getResourceAsStream ==> 根据相对路径获得指定资源流
+		
+	3.servlet技术中对象的范围
+		__servlet ==> 项目启动期间一个servlet只有一个servlet实例__
+		request ==> 项目启动期间,request对象的数量,要看当前有多少个请求正在处理.
+		response ==> 同上.
+		servletConfig ==> 一个servlet实例对应一个servletConfig对象
+		__servletContext ==> 整个项目中,永远只有一个servletContext实例存在.__
+//---------------------------------------------------------------------------------------------------------------------
+	//---------------------------------------------------------------------------
+	//如果获得的是包下的,那么太麻烦了.
+			//一:使用getClass().getResourceAsStream方法,相对路径分为两种情况
+					//1: 加"/"  ==> 相对的是classes目录
+					//2: 不加"/" ==> 相对的是本类当前目录
+						InputStream is = this.getClass().getResourceAsStream("students.xml");
+						System.out.println(is);
+			//二:使用this.getClass().getClassLoader().getResourceAsStream("");获得
+					//只有一个相对路径 ==> 就是相对于 classes目录
+						InputStream is2 = 	this.getClass().getClassLoader().getResourceAsStream("students.xml");
+						System.out.println(is2);
+			
+		
+			
+//注意: 使用类和类加载器加载资源文件时
+				//1 jvm运行期间只加载一次. 但是使用下面的代码可以解决这个问题.
+					String path = this.getClass().getClassLoader().getResource("students.xml").getPath();
+					File file = new File(path.substring(1, path.length()));
+					System.out.println(path);
+				//2 getClassLoader()原本是用来加载.class文件的, 所以缓存设计的很小.不要用他加载一些别较大的资源.
+	
+	
+
+	
+
+
+

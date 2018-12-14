@@ -1,0 +1,255 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-02-20T17:14:10+08:00
+
+====== jsp&el ======
+Created 星期二 20 二月 2018
+[[j2ee|home]]
+
+//----------------------------------------------------------------------------------------------------------------------
+JSP技术 
+java server page
+
+1.该技术干嘛的?
+	servlet先出现.只有servlet的时候,servlet又要处理逻辑又要负责输出html. 在servlet中输出 html 太痛苦. 推出了jsp技术.
+专注于显示.
+
+2.jsp的运行机制.
+	.jsp =(第一次访问jsp的时候)=> .java ==> .class(servlet) 
+	
+3.jsp编译成.java之后的目录在tomcat的 work目录下.
+
+4.JSP中的脚本
+	<% %> : 直接写java代码,出现在jsp的servlet中的service方法中.
+	<%! %>: 直接写java代码,出现在jsp生成的servlet的类中. 声明类中的变量, 方法.
+	<%= %>: 输出, 写在该脚本中的代码,最后会出现在service方法 中,并以 out.print(); 包裹.
+5.JSP中的注释
+		<%-- --%> : 被注释掉的内容,不会生成到java文件中.
+		<!-- -->  : html注释,将html代码发送给浏览器之后,给浏览器看的.
+6JSP指令
+	三大指令:
+		page 页面中的一些信息(最复杂)
+			language: 描述当前页面使用的语言. 目前取值只有java.
+			buffer="8kb" (不常用) : 决定缓存的大小.
+			autoFlush="true"(不常用) : 如果缓存写满了.如果该属性为true,会将缓存中的自动输出到浏览器. 设置为false,将会报错.
+			**import="java.io.FileOutputStream" 该属性用来导包. 唯一一个可以出现多次的.
+			extends=""(不用) 绝对 jsp生成的java文件 继承哪个类.默认继承:org.apache.jasper.runtime.HttpJspBase.通过该属性可以改变.也必须是HTTPServlet的子类.
+			**pageEncoding="UTF-8"  决定服务器读取jsp时 采用什么编码读
+			**contentType="text/html; charset=UTF-8" 响应浏览器时 告诉浏览器用什么码表解码. 
+				以上两个属性,只需要指定一个,另外一个会自动指定.
+			errorPage=""(不常用)  当前jsp中出现了异常. 那么跳转到哪个页面.
+			isErrorPage="false"(不常用) 标识当前页面是否是处理错误的页面.
+				拓展: 错误页面可以使用如下统一配置
+					<error-page>
+						<error-code>500</error-code>
+						<location>/zhiling/Demo2.jsp</location>
+					</error-page>
+			session="true"(不要修改) 页面中是否 需要使用session对象.如果为false,那么session内置对象会消失. 默认为true.
+			
+		include 页面包含指令(静态包含)
+			
+		taglib 引入标签指令
+		
+七.九大内置对象.
+		 public void _jspService(HttpServletRequest __1>__request, HttpServletResponse __2>__response)
+		throws java.io.IOException, ServletException {
+
+			PageContext __3>__pageContext = null;
+			HttpSession __4>__session = null;
+			Throwable __5>__exception = org.apache.jasper.runtime.JspRuntimeLibrary.getThrowable(request);
+			if (exception != null) {
+			  response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			}
+			ServletContext __6>__application = null;
+			ServletConfig __7>__config = null;
+			JspWriter __8>__out = null;
+			Object __9>__page = this;
+	类型				变量名称
+--------------------
+	HttpServletRequest  request 
+	HttpServletResponse response
+	HttpSession 		session
+	Throwable			exception
+	ServletContext  	application
+	ServletConfig		config
+没学过
+	Object				page   
+	JspWriter			out
+	PageContext         pageContext
+
+1>page对象指向了当前servlet的实例.(一般没用)
+
+2>JspWriter jsp中都是使用JspWriter再向外输出内容.
+	response.getWriter 和 JspWriter 有什么区别?
+		response.getWriter的输出会出现在JspWriter输出的前面.
+		JspWriter缓存会附加到response.getWriter缓存后.最终输出response.getWriter缓存.
+		注意:JSP中不要直接使用response.getWriter.
+3>PageContext 对象	
+	1.page域. 范围只在当前页面当中.(4个域中最小一个域).
+			//存值
+			pageContext.setAttribute("", "");
+			//取值
+			pageContext.getAttribute("");
+			//删除一个值
+			pageContext.removeAttribute("");
+	2.还可以操作其他3个域. 
+		如何获得其他3个域代表的int值.PageContext中的常量.比如PageContext.REQUEST_SCOPE代表request域
+				//存值
+				pageContext.setAttribute("name", "tom",PageContext.REQUEST_SCOPE ); __//向request域中存__
+				//取值
+				pageContext.getAttribute("name", PageContext.REQUEST_SCOPE);
+				//删除一个值
+				pageContext.removeAttribute("name", PageContext.REQUEST_SCOPE);
+				//遍历所有键
+				pageContext.getAttributeNamesInScope(PageContext.REQUEST_SCOPE);
+	3.还能获得其他8个内置对象. 作用：为了以后向标签中传递所有对象（一个pageContext即可而不是传递8个内置对象）
+			pageContext.getRequest();
+    		
+			pageContext.getResponse();
+    		
+			pageContext.getSession();
+    		
+			pageContext.getServletContext();
+    		
+			pageContext.getServletConfig();
+    		
+			pageContext.getOut();
+    		
+			pageContext.getException();
+    		
+			pageContext.getPage();
+八.	JSP标签(本身库很大,有很多标签,全都不用了.因为当年想完全取代servlet，现在只专注于显示，所以很多标签不用)
+	<jsp:useBean id="u" scope="page" class="cn.itcast.bean.User" ></jsp:useBean>
+		相当于如下java代码
+	User user = new User();
+  	pageContext.setAttribute("u", user);
+	
+	<jsp:setProperty property="name" name="u" param="name" />
+		相当于如下java代
+	((User)pageContext.getAttribute("u")).setName(request.getParameter("name"));
+	
+	<jsp:getProperty property="name" name="u"/>
+		相当于如下java代码
+	out.print(((User)pageContext.getAttribute("u")).getName());
+
+九.JAVA BEAN
+就是在写法上符合以下格式即可成为java bean
+	/*
+	 * 1.所有作为属性保存的成员变量私有化 ==> java不能脱离基本特性==> 封装性
+	 * 2.有空参构造  ==>  使用内省可以帮你创建对象.
+	 * 3.属性由对应get/set方法 ==> 1.满足了封装性, 2.命名规律的话,内省就能分辩出哪些是操作属性的方法,那些不是.
+	 */
+符合上面的格式,对我们开发来说有什么好处?
+	可以应用JAVA的内省机制.
+	
+BeanUtils 工具类
+	提供一个populate方法,可以把表单提交的参数自动封装到Bean中.
+	并且可以自动进行类型转换.
+	转换范围是 8个基本数据类型.
+	我们也可以注册一个转换器,让BeanUtils可以转换其他类型.(参照BServlet和MyConverter)
+	
+十EL表达式
+	封装内省的操作. 可以通过EL表达式操作JAVA BEAN.
+
+功能: 替代页面上的代码
+	1.使用EL内置对象,获得数据
+				EL的内置对象如下:
+					1.requestScope
+					2.sessionScope
+					3.applicationScope
+					4.pageScope
+					//--------------通过以上4个内置对象可以对4大域进行访问
+					//--------------下面的内置对象用处不大,
+					5.param.xxx = request.getParameter("xxx"); 
+					6.paramValues  这两个对象封装了表单参数
+					7.header
+					8.headerValues 这两个对象封装了HTTP请求头
+					9.initParam 封装了web.xml中 配置
+					10.pageContex 封装了 9大内置对象中的 pageContext
+					11.cookie  封装了cookie信息
+					
+	2.使用EL表达式可以获取JAVABEAN属性 集合项的值.
+				使用EL访问User对象
+			 <%
+				User u = new User();
+				u.setName("tom");
+				request.setAttribute("user", u);
+			  %>
+			  ${requestScope.user.name}==><%((User)request.getAttribute("user")).getName(); %><br>
+			  ${requestScope.user['name']}==><%((User)request.getAttribute("user")).getName(); %><br>	
+			<%
+				使用EL访问数组
+				String[] array = new String[]{"tom","jerry","jack","rose"};
+				request.setAttribute("array", array);
+			 %>
+			  ${requestScope.array[2]} <br>
+			  <%
+				使用EL访问List
+					List<String> list = new ArrayList<String>();
+					list.add("jack");
+					list.add("rose");
+					request.setAttribute("list", list);
+			   %>
+			   ${requestScope.list[1]}<br>
+			   <%
+				使用EL访问Map
+					Map<String,String> map = new HashMap<String,String>();
+					map.put("birthday", "now");
+					map.put("haha.heihei", "hiahia");
+					request.setAttribute("map", map);
+				%>
+				${requestScope.map.birthday}<br>
+				${requestScope.map['birthday']}<br>
+				${requestScope.map['haha.heihei']}<br>
+  	   
+	3.使用EL可以进行逻辑运算
+						<%
+					request.setAttribute("num1", 10);
+					request.setAttribute("num2", 20);
+					//EL表达式支持如下运算符.
+				 %>
+			  
+					${num1 > num2} ==>${num1 gt num2}<br>
+					${num1 < num2} ==>${num1 lt num2}<br>
+					${num1 <= num2}==>${num1 le num2} <br>
+					${num1 >= num2}==>${num1 ge num2} <br>
+					${num1 == num2}==>${num1 eq num2} <br>
+					${num1 != num2}==>${num1 ne num2} <br>
+					${true && true}<br>
+					${true || true}<br>
+					${!true}<br>
+					${(num1 > num2)?"num1厉害":"老2厉害" }
+十一.EL函数库的学习
+	1.什么是EL函数库,干什么用的?
+			简化页面中静态方法的调用,使用EL函数代替JAVA代码.
+	2.如何自定义EL函数库?
+			1>定义工具类,在类中定义静态方法
+			2>填写配置文件xxx.tld 放到WEB-INF下
+				加入如下配置:
+							<!--版本号(没啥用) -->
+					  <tlib-version>1.0</tlib-version>
+					  <!--推荐使用的前缀 -->
+						  <short-name>myFn</short-name>
+						  <!--给该标签库 起一个"包名" ,在页面中引入时 使用. -->
+						  <uri>http://www.itcast.cn/myFn</uri>
+
+						<!--注册一个EL函数 -->
+						  <function>
+							<!--声明函数名称 -->
+							<name>getTime</name>
+							<!--注册静态方法所在的完整类名 -->
+							<function-class>cn.itcast.tool.Tool</function-class>
+							<!-- 绑定类中的静态方法 -->
+							<function-signature>java.lang.String getTime()</function-signature>
+						  </function>
+						</taglib>
+			3>页面中先引入.
+				<%@ taglib prefix="myFn" uri="http://www.itcast.cn/myFn"  %>
+				再使用.
+				${myFn:getTime()}
+	3.学习系统自带的EL函数.
+			${fn:contains("hiahia", "hi")}<br> 判断是否包含
+			${fn:endsWith("abha", "ha")}<br>  判断是否以某字符串结尾(有BUG)
+			${fn:escapeXml("<font color='red'>haha</font>")}<br> 自动将html关键字符转义
+			剩下的是自学作业,,,
+				

@@ -1,0 +1,40 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-02-14T15:29:31+08:00
+
+====== html ======
+Created 星期三 14 二月 2018
+
+HTML
+	概念
+		1.超文本  标记语言
+		2.是由浏览器解析
+		3.后缀名是 html 或 htm ,没有区别
+		4.用作展示页面
+	HTML中的标签
+		排版标签
+			<p>,<hr>,<br>,<pre>
+		字体标签
+			<font>,<hn>,<strike>,<u>,<b>
+		转义字符
+			&lt; , &gt; , &nbsp;
+		清单标签
+			有序列表:  ol  li
+			无序列表:  ul  li
+			定义列表:  dl  dt dd
+		超链接标签
+			<a>
+		图片标签
+			<img>
+		表格标签
+			<table>,<tr>,<td>,<th>
+		框架标签
+			frameset , frame
+		表单标签
+			form
+			input
+				type属性: text password radio checkbox submit file Reset hidden button image
+			select
+			textarea
+		meta标签
+			<meta>: Content-type , refresh

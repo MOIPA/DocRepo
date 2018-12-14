@@ -1,0 +1,20 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-02-14T15:28:53+08:00
+
+====== j2ee ======
+Created 星期三 14 二月 2018
+
+1：什么是j2ee? j2ee的介绍
+
+开始学习j2ee：
+
+
+	--------------------
+	1：[[+tomcat|什么是tomcat？]]
+	2：[[+servlet|什么是servlet？]]
+	3：[[+servlet:ServletContext|servlet下的ServletContext作用]]
+	4：[[+request & response|什么是request  什么是response？]]
+	5：[[+cookie&session|什么是cookie 什么是session？]]
+	6：[[+jsp&el|什么是jsp  el技术是什么？]]
+

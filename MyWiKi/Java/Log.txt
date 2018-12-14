@@ -1,0 +1,31 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-05-01T20:52:41+08:00
+
+====== Log ======
+创建日期 星期二 01 五月 2018
+
+在Java 中实现记录日志的方式有很多种， 
+1. 最简单的方式，就是system.println.out(error) ,这样直接在控制台打印消息了。 
+2. Java.util.logging ; 在JDK 1.4 版本之后，提供了日志的API ，可以往文件中写日志了。 
+3. log4j , 最强大的记录日志的方式。 可以通过配置 .properties 或是 .xml 的文件， 配置日志的目的地，格式等等。 
+4. commons-logging, 最综合和常见的日志记录方式， 经常是和log4j 结合起来使用。
+
+系统自带的Logger使用
+
+	Logger类是用来记录 某个级别的日志消息：
+	
+	　　级别共分为以下几类，从上倒下，级别依次下降：
+	　　　　SEVERE(严重)------级别最高
+	　　　　WARNING(警告)
+	　　　　INFO
+	　　　　CONFIG
+	　　　　FINE
+	　　　　FINER
+	　　　　FINEST------最低值
+	　　　　另外，还有一个级别 OFF，可以用来关闭日志；使用级别 ALL，启用所有消息的日志记录。（日志消息级别，可以查看 java.util.logging.Level类）
+	
+	简单应用：
+			Logger logger = Logger.getLogger("Receiving Pic");
+			logger.setLevel(Level.ALL);
+			logger.info("开始处理上传文件");

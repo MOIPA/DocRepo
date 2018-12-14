@@ -1,0 +1,67 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-04-30T14:39:25+08:00
+
+====== 环境搭建 ======
+创建日期 星期一 30 四月 2018
+
+1 : 安装nodejs
+
+	Appium官方网站：http://appium.io/
+	Easy setup process, run a test now.
+	> brew install node        # get node.js
+	> npm install -g appium  # get appium
+	> npm install wd          # get appium client
+	> appium &                # start appium
+	> node your-appium-test.js
+	
+	官方首页给出了appium的安装步骤。
+	
+	我们需要先安装node.js 。node.js官方网站：https://nodejs.org/{{~\Documents\GitHub\JavaEE\MyWiKi\Pic\Appium\nodejs.png}}
+	根据你的操作系统选择相应的版本进行下载
+	
+	安装完成，打开Windows 命令提示符，敲入“npm”命令回车。
+	
+	{{~\Documents\GitHub\JavaEE\MyWiKi\Pic\Appium\succeed.png}}
+	
+2 : 安装appium
+	
+	npm安装完成 可以使用npm install -g appium自动化获取appium 但是由于伟大的墙，可能会失败或缺少组件
+	
+	可以绕过这个直接在官网下载：https://bitbucket.org/appium/appium.app/downloads/
+		{{~\Documents\GitHub\JavaEE\MyWiKi\Pic\Appium\appiumDownload.png}}
+	
+	
+	选择对应的版本
+	
+		{{.\pasted_image.png}}
+
+		启动界面
+
+
+3 ： android 环境 
+	jdk环境 lue
+	设置环境变量：ANDROID_HOME ---> androidSDK目录
+	将sdk目录下的platform-tools 和 tools加入path环境变量
+	
+	最后运行appium-doctor检查
+	{{.\pasted_image001.png}}
+	
+	
+	
+	4：安装Appium Client
+	
+		Appium Client是对webdriver原生api的一些扩展和封装。它可以帮助我们更容易的写出用例，写出更好懂的用例。
+		
+		　　Appium Client是配合原生的webdriver来使用的，因此二者必须配合使用缺一不可。
+		
+		　　在本文档的开始已经介绍Appium支持多种编程语言编写自动化测试脚本，由于我个人熟悉Python语言，所以选择Python语言来编写自动化测试脚本。
+		
+		　　访问Python官方网站：https://www.Python.org/
+		
+		　　下载最新版本的Python2，截止作者发稿，最新版本为Python2.7.10版本。读者根据自己的平台选择相应的版本进行下载；对于Windows用户来说，如果你的系统是32位的请选择x86版本，如果是64位系统请选择64版本进行下载。下载完成会得到一个以.msi为后缀名的文件，双击进行安装。
+
+
+		安装完毕后会获得pip自动化管理工具：使用 pip install Appium-Python-Client获得Python包
+
+

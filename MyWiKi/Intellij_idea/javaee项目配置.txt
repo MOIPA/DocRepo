@@ -1,0 +1,31 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-05-01T21:07:47+08:00
+
+====== javaee项目配置 ======
+创建日期 星期二 01 五月 2018
+
+ctrl+alt+shift+S 开启配置页面
+
+		{{.\pasted_image.png}}
+
+Project：设置编译的jdk
+modules：点击工程 配置依赖
+facets：{{.\pasted_image001.png}}
+	可以点击+号建立web.xml
+
+artifacts：部署配置  由于本地工程和部署工程不是一个目录，可以选择管理部署的文件
+
+		{{.\pasted_image002.png}}
+		
+		
+服务器配置：
+		{{.\pasted_image003.png}}
+		{{.\pasted_image004.png}}
+		
+		必须设置主目录，否则部署失败
+{{.\pasted_image005.png}}
+
+
+
+

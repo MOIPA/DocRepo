@@ -1,0 +1,45 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-05-01T17:11:52+08:00
+
+====== 上传图片问题 ======
+创建日期 星期二 01 五月 2018
+
+选用了ssi upload组件，fiddle抓包可以看到发送图片的流信息，
+现在我需要上传图片后返回图片地址，再post请求到页面。
+
+第一个问题：点击了submit 等待ssi返回success太慢了，获取不到返回的图片地址就跳转了
+			目前解决方法： 在成功的回调函数中提交 即用户点击的提交按钮中完成这些时间
+												1：点击上传图片按钮（按钮对用户隐藏）
+												2：上传图片按钮成功的回调函数里点击真正提交按钮，否则向用户报错
+				 var submitAllInfo = function(){
+							$("#submit_all").click();
+						}
+			
+						$('#ssi-upload').ssi_uploader({
+							url: 'http://localhost:8080/${pageContext.request.contextPath}/postactivity',locale: "zh_CN",
+							data:{
+								"name":"1"
+							}
+							,
+							onUpload: function () {
+								setTimeout("submitAllInfo()",2000);
+								alert("succedd");
+							}
+
+第二个问题：获取不到返回的图片地址  
+			解决方法：按照网上的思路，在js后台手动添加一行代码，把返回的数据返回给前台
+		{{.\pasted_image.png}}
+		
+		
+		
+		fiddle 抓包查看上传信息
+		{{.\pasted_image001.png}}
+		
+		
+		问题三：onUpload在一个文件上传后就开始执行，我需要全部上传完毕开始
+		
+		{{.\pasted_image003.png}}
+		
+
+
