@@ -75,3 +75,18 @@ linux: pacman -S git
 2. #### how to git clone 
 
    1. git clone http://github.com/MPOIA/javaEE
+
+### Problems
+
+1. #### switch to ssh instead of https
+
+   1. git remote -v : see connection 
+   2. git remote rm oringin :clear connection
+   3. git remote add oringin git@github.com:MOIPA/REpo.git
+
+2. #### error when test SSH connection
+
+   1. ssh -t github.com  : denied
+   2. solution : ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+   3. then git push -u origin master
+
