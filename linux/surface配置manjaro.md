@@ -67,3 +67,8 @@ push the voice-plus button and powerOn to get into UEFI
 3. #### git
    1. sudo pacman -S git
 
+4. #### oh my zsh : the official site[oh_my_zsh][https://github.com/robbyrussell/oh-my-zsh]
+   1. yaourt -S zsh
+   2. sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
+   3. vim ~/.zshrc
+5. #### tim
