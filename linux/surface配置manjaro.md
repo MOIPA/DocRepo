@@ -71,4 +71,25 @@ push the voice-plus button and powerOn to get into UEFI
    1. yaourt -S zsh
    2. sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
    3. vim ~/.zshrc
+   4. source ~/.zshrc  :to enable the plugins
 5. #### tim
+
+6. #### vim configuration
+   1. GlobalSettings:/etc/vim/vimrc    or  /etc/vimrc
+   2. persional settings : ~/.vimrc
+   3. some command:  
+	> set number
+	> syntax on
+	> set showmode
+	> set ecoding=utf-8
+	> set t_Co=256
+	> filetype indent on
+	> set autoindent
+	> set tabstop=3
+	> set expandtab	
+	> set cursorline
+	> set wrap
+	> set hlsearch
+	> set ignorecase
+
+   
