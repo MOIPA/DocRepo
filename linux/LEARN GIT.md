@@ -82,7 +82,30 @@ linux: pacman -S git
 				a: git branch bname
 				b: git checkout bname
    2. git branch (see branches)
+   3. connflicts: solve it in person
+   	a:git status : show conflicted files
+	b:vim conflicted files: show details
+	c: git log --graph --pretty=oneline --abbrev-commit  :show branches merge status
+   4. git merge --no-ff : use this argument can show merge history in git graph command
+   5.  force delete unmerged branches : git branch -D bName
 
+### git stash (used to store the context)
+   1. when developing in dev branch, a bug in master branch need to be solved.
+	 2. git stash in dev branch
+	 3. git checkout -b issue-101 to create a bugfix branch
+	 4. after fixed, git checkout master then: git merge -m "bug fix issue 101" issue-101
+	 5. git checkout dev , git stash pop to continue
+	**conclusion: it is used for clean git , because you can't push when have some unfinished work **
+### git push & git pull
+   1. git push origin(default name of remote repository) <branch>(can be master or other banch name)
+	 2. if push failed,use **git pull** to get the newest update and solve the conflict
+	 3. git pull  : if failed and shows no tracking information use **git branch --set-upstream-to=origin/<branch> localBranchName
+								it failed because u don't connect ur local dev to remote dev
+	team work:
+  when work with a team, members only can get master branch and it's default name is origin
+  now if we want to get a remote branch like dev: **git checkout -b <lbname> origin/<bname>**
+###git rebase
+   1. make the git history become a straight line
 ### Problems
 
 1. #### switch to ssh instead of https
