@@ -76,6 +76,13 @@ linux: pacman -S git
 
    1. git clone http://github.com/MPOIA/javaEE
 
+### branches
+   1. git checkout -b branchName(-b : create a branch and switch to it)
+   	-b :equals two command:
+				a: git branch bname
+				b: git checkout bname
+   2. git branch (see branches)
+
 ### Problems
 
 1. #### switch to ssh instead of https
