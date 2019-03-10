@@ -1,0 +1,454 @@
+(function($) {
+	$(function() {
+		//ADS
+		window.onload=function(){
+			var bannerShow = $("[id^='bannerPos']");
+			for(var n in bannerShow){
+				if(bannerShow.eq(n).is(':visible')){
+					bannerShow.eq(n).prev('.bannerAdvert').show();
+					bannerShow.eq(n).closest('.autoHideBanner').show();
+					bannerShow.eq(n).closest('.bannerWrap').show();
+				}
+			}
+		}
+
+		var screenwidth = window.screen.width;
+		if(document.getElementById("bannerWrap")!=null){
+			if (screenwidth > 1024) {
+				document.getElementById("bannerWrap").style.display = "";
+			} else {
+				document.getElementById("bannerWrap").style.display = "none";
+			}
+		}
+
+		$(".topCec-select").hover(function() {
+			$(this).addClass("active");
+			trackJumpUrl('from=nonRegisterSubs_globalNav', document.location.href);
+		}, function() {
+			$(this).removeClass("active");
+			if($(".subscribe-pop input").length > 0) {
+				$(".subscribe-pop input")[0].blur();
+			}
+		})
+		
+		//contribute article on top nav
+		if($('#show_touGaoPop').length != 0){
+			$('#show_touGaoPop').on('click', function(){
+				$('.touGaoPop').addClass('show');
+			});
+			$('.touGaoPop').on('click', '.cmBlueButton', function(){
+				$('.touGaoPop').removeClass('show');
+			});
+		}
+		
+		// search box bind click,show search item
+		$(".select_box").click(function(a){   
+		    a.stopPropagation();
+		    $(this).find(".option").toggle();
+		    $(this).parent().siblings().find(".option").hide();
+		});
+		$(document).click(function(event){
+		    var eo=$(event.target);
+		    if($(".select_box").is(":visible") && eo.attr("class")!="option" && !eo.parent(".option").length)
+		    $('.option').hide();                                      
+		});
+		$(".option li").click(function(){
+		    var value=$(this).text();
+		    $(this).parent().siblings(".select_txt").text(value);
+		    $("#select_value").val(value)
+		}) 
+		$(".option li").bind("click",function(){
+			$("#searchSelected").html($(this).html());
+			$("#searchType").val($(this).attr("data-val"));
+		})
+
+		// nav #9551
+		$(".navMenu li").mouseover(function(){
+		  	$(this).css("background-color","#b7b8bd");
+		  	$(".navMenu li.on").removeClass("on");
+		});
+		$(".navMenu li").mouseout(function(){
+		  	$(this).css("background-color","#4e91f3");
+		  	$(".navMenu li.home").addClass("on");
+		});
+
+		// Menu item bind mouseenter and mouseleave
+		$(".navMenu li").each(function(index, el) {
+			$(el).bind("mouseenter", function() {
+				$(this).addClass("active");
+				$(".searchTxt input")[0].blur();
+			})
+			$(el).bind("mouseleave", function() {
+				$(this).removeClass("active");
+			})
+		})
+		
+		$("#ui_msgClose").bind("click", function() {
+			$("#ui_topMsg").hide();
+		})
+		
+		var $ul = $("#scroll_topAd");
+		if ($ul.find('p').length >= 1) {
+			$ul.find('p').addClass("Spread_txt");
+		}
+		
+		// =S MR#9821 placeholder
+		if($.browser.msie){
+			$('input[type=text],input[type=password],.follow_commentText').each(function(){
+				var inputVal = $(this).attr('placeholder'),
+				labelContent = '<label class="inputLabelTips">'+ inputVal +'</label>';
+				if($(this).val() == ""){
+					$(this).parent().append(labelContent);
+					$(this).removeAttr('placeholder');
+					}
+		    })
+		   $('input[type=text],input[type=password],.follow_commentText').on('focus',function(){
+			   $(this).parent().find('.inputLabelTips').hide();
+			})
+			$('input[type=text],input[type=password],.follow_commentText').on('blur',function(){
+				if($(this).val() == ""){
+					$(this).parent().find('.inputLabelTips').show();
+					}
+			})
+			$('.inputLabelTips').on('click',function(){
+				$(this).parent().find('input,textarea').focus();
+			})
+		}
+		// =S MR#9821 placeholder
+
+	});
+}(jQuery));
+
+/**
+ * For tracking click action.
+ */
+function trackJump(code){
+	var trackUrl = '/images/blank.gif?jumpto='+code+'-'+ new Date().getTime();
+	(new Image()).src=trackUrl;
+}
+
+function trackJumpTo(code){
+	var date=new Date();		
+	var dateStr = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
+	var trackUrl = '/images/blank.gif?' + code + '&' + dateStr + '&' + new Date().getTime();
+	(new Image()).src=trackUrl;
+}
+
+function trackJumpUrl(code, params){
+	var date=new Date();
+	var dateStr = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
+	var trackUrl = '/images/blank.gif?' + code + '&' + dateStr + '&' + new Date().getTime();
+		trackUrl = trackUrl + '&' + params;
+	(new Image()).src=trackUrl;
+}
+
+function setCECSearch(searchType,forum_domain,server_name) {
+	if (searchType == "ART") {		
+		document.getElementById('searchhref').href = server_name+"/articleAdvSearch.do";
+		document.getElementById("searchbar-advancedLink").style.display="";
+		document.getElementById("searchbar_form").action = "/FSSearch.do";
+
+	} else if(searchType == "DG" || searchType == "BLOG" || searchType == "ALL") {
+		if(searchType=="DG"){
+			document.getElementById("searchbar_form").action = forum_domain+"/forumsearchredirect.jsp";
+			document.getElementById('searchhref').href = forum_domain+"/advanced-search!default.jspa";
+			document.getElementById("searchbar-advancedLink").style.display="";
+		}else if(searchType=="BLOG"){ 
+			document.getElementById("searchbar_form").action = forum_domain+"/forumsearchredirect.jsp";
+			document.getElementById('searchhref').href = server_name+"/advanced-search!default.jspa";
+			document.getElementById("searchbar-advancedLink").style.display="";
+		}else if(searchType == "ALL"){
+			document.getElementById("searchbar_form").action = forum_domain+"/forumsearchredirect.jsp";
+			document.getElementById('searchhref').href = forum_domain+"/advanced-search!default.jspa";
+			document.getElementById("searchbar-advancedLink").style.display="";
+		}
+	} else {
+		document.getElementById("searchbar_form").action = server_name+"/FSSearch.do";
+		document.getElementById('searchhref').href = server_name+"/articleAdvSearch.do";
+	}
+}
+
+function SetCookie(name,domain, path) {
+	var expires = new Date(); 
+	var today = new Date(); 
+	expires.setTime(today.getTime() + 1000 * 60 * 60 * 24 ); 
+	var value=(getCookie(name)==""?1:parseInt(getCookie(name))+1);
+	document.cookie = name + "=" + escape (value) +((expires == null) ? "" : ("; expires="+ expires.toGMTString()))  
+	+((path == null) ? "" : ("; path=" + path)) +((domain == null) ? "" : ("; domain=" + domain));
+}
+
+function getCookie(Name) {
+	var search = Name + "=";
+	if (document.cookie.length > 0) {
+		offset = document.cookie.indexOf(search);
+		if (offset != -1) {
+			offset += search.length;
+			end = document.cookie.indexOf(";", offset);
+			if (end == -1) {
+				end = document.cookie.length;
+			}
+			return unescape(document.cookie.substring(offset, end));
+		} else {
+			return ("");
+		}
+	} else {
+		return ("");
+	}
+}
+
+function callYahooInfo(){
+	var url = "/ajaxYahooPanel.do";
+	var pars = "type=show";
+	jQuery.ajax({
+		type:"get",
+		url:url +"?" + pars ,
+		success:function(data,textStatus){
+			showYahooInfo(data,textStatus);
+		}
+	});
+}
+
+function showYahooInfo(xmlHttp,data,textStatus){
+	if(textStatus == "success"){
+		var text = xmlHttp;
+		var result = text.split(",");
+		if(result[0] == "Y"){
+			var str = "";
+			str+= "<div id=\"ui_topYahooMsg\" class=\"topMsg\">";
+			str+= "<p>中国雅虎邮箱已停止服务，请<a href=\""+result[1];
+			str+= "/updLoginInfo.do?click_from=top_popup\" style=\"text-decoration:underline\"><font color=\"#000066\">更新注册邮箱</font></a><font color=\"#000066\">。</font></p>";
+			str+= "<a id=\"ui_msgYahooClose\" class=\"msgClose\" title=\"关闭\" href=\"javascript:;\">关闭</a>";
+			str+= "<div class=\"topArrow\"><em>◆</em><span>◆</span></div>";
+			str+= "</div>";
+			$('yahooMsgDiv').innerHTML= str;
+			jQuery("#ui_msgYahooClose").bind("click",function(){
+				jQuery("#ui_topYahooMsg").hide();
+				jQuery.ajax({url: "/ajaxYahooPanel.do?type=delete"})
+			});
+		}
+	}
+}
+
+var message='消息';
+var blogIdVal;
+function callUserInfo() {
+	var url = "/ajaxUserPanel.do";
+	jQuery.ajax({
+		type:"post",
+		url:url,
+		success:function(data){
+			showInfo(data);
+		}
+	});
+}
+
+function showInfo(xmlHttp){
+	var xmlobj = xmlHttp;
+	var userRoot = xmlobj.getElementsByTagName("user")[0];
+	var userId = userRoot.getAttribute("id");
+	var forumDomain = userRoot.getAttribute("forumDomain");
+	var groupDomain = userRoot.getAttribute("groupDomain");
+	var imageDomain = userRoot.getAttribute("imageDomain");
+	var nameValue = userRoot.getElementsByTagName("name")[0].firstChild.data;
+	var logoutLabelValue = userRoot.getElementsByTagName("logout-label")[0].firstChild.data;
+	var iconNode = userRoot.getElementsByTagName("icon")[0];
+	var shortMsgNode = userRoot.getElementsByTagName("short-msg")[0];
+	var shortMsgImgNode = shortMsgNode.getElementsByTagName("image")[0];
+	var unreadValue = shortMsgNode.getElementsByTagName("unread")[0].firstChild.data;
+	var pointsNode = userRoot.getElementsByTagName("points")[0];
+	var infoLinkValue = userRoot.getElementsByTagName("info-link")[0].firstChild.data;
+	var userinfoNode = userRoot.getElementsByTagName("userinfo")[0];
+	var userLevelNode = userRoot.getElementsByTagName("userlevel")[0];
+	var blogurl = userRoot.getElementsByTagName("userblogurl")[0].firstChild.data;
+	var rollinfo = userRoot.getElementsByTagName("rollinfo")[0].firstChild.data;
+	var webHost = userRoot.getElementsByTagName("webhost")[0].firstChild.data;
+	var isPopup = userRoot.getElementsByTagName("ispopup")[0].firstChild.data;
+	var hasMagazine = userRoot.getElementsByTagName("hasmagazine")[0].firstChild.data;
+	var optInFlag = userRoot.getElementsByTagName("optinflag")[0].firstChild.data;
+	var imageUrlValue = userRoot.getElementsByTagName("image-url")[0].firstChild.data;
+	var loginNameValue = userRoot.getElementsByTagName("loginName")[0].firstChild.data;
+	var nickNameValue = userRoot.getElementsByTagName("nickName")[0].firstChild.data;
+
+	var noticeLabel = "";
+	var noticeUrl = webHost + "/freesub/subFreeMagazine.do";
+
+	if(imageUrlValue!=null){
+		$('#topImg').attr('src',imageUrlValue);
+	}
+	if(nickNameValue!=null && ""!=nickNameValue){
+		$('#topName').html(nickNameValue);
+	}else if(loginNameValue!=null){
+		$('#topName').html(loginNameValue);
+	}
+	
+	if(hasMagazine=="Y") {
+		noticeLabel="我确认续订杂志！";
+	} else {
+		noticeLabel="我申请免费杂志！";
+	}
+
+	var str = "";
+	if(optInFlag != "Y"){
+		var noticeMsg = "请验证您的注册邮箱！";
+		var activateUserUrl = webHost + "/activateUser.do";
+		//弹出没有DOI提示start
+		str+="<div class=\"topMsg\" id=\"ui_topMsg\">";
+		str+= "<p>"+noticeMsg+"</p>";
+		str+= "<a class=\"msgBtn\" href=\""+activateUserUrl+"\">立即验证</a>";
+		str+= "<a id=\"ui_msgClose\" class=\"msgClose\" title=\"关闭\" href=\"javascript:;\">关闭</a>";
+		str+= "<div class=\"topArrow\"><em>◆</em><span>◆</span></div>";
+		str+="</div>"
+		//弹出没有DOI提示end
+	}else {
+		//小弹出框 start
+		str+="<div class=\"topMsg\" id=\"ui_topMsg\" style=\"display:none\">";
+		str+= "<p>"+noticeLabel+"</p>";
+		str+= "<a class=\"msgBtn\" href=\""+noticeUrl+"\">提交</a>";
+		str+= "<a id=\"ui_msgClose\" class=\"msgClose\" title=\"关闭\" href=\"javascript:;\">关闭</a>";
+		str+= "<div class=\"topArrow\"><em>◆</em><span>◆</span></div>";
+		str+="</div>"
+		//--小弹出框 end
+	}
+	
+	
+	
+	var rollNews = rollinfo;
+	jQuery('#scroll_topAd').html(rollNews);
+
+	//add for homepage mycec menu
+	var blogidValue = shortMsgNode.getElementsByTagName("blogid")[0].firstChild.data;
+	document.getElementById('weibo_id').href = document.getElementById('weibo_id').href+"?blog_id="+blogidValue;
+	blogIdVal = blogidValue;
+}
+
+function showNotice(trgId,conId){
+	if($('#' + trgId) != null) {
+		$('#' + conId).css('display', 'block');
+	} else {
+		$('#' + conId).css('display', 'none');
+	}
+}
+
+function doAction(){
+	var emailAddrEl = document.nonRegisterSubsEnterForm.emailAddr;
+	if(isValidEmail(emailAddrEl.value)){
+		document.nonRegisterSubsEnterForm.submit();
+		return true;
+	}else{
+		alert(emailAddrEl.getAttribute("tips"));  
+		return false; 
+	}
+}
+
+// check email address
+function isValidEmail(emailAddress){
+	var reg = /^[_a-zA-Z0-9.\-]+@([_a-zA-Z0-9]+\.)+[a-zA-Z0-9]{2,3}$/;
+	if(emailAddress.length > 0 && reg.test(emailAddress)){
+		return true;
+	}else{
+		return false; 
+	}
+}
+
+
+
+$(function(){
+var showLife = $('.life_ul');
+var showImg = $('.lifeImg');
+
+ showLife.eq(1).mouseover(function(){
+ 	showImg.hide();
+ 	showImg.eq(1).show();
+ 	showLife.show();
+ 	showLife.eq(1).hide();
+
+ });
+ showLife.eq(0).mouseover(function(){
+ 	showImg.hide();
+ 	showImg.eq(0).show();
+ 	showLife.show();
+ 	showLife.eq(0).hide();
+
+ });
+  showLife.eq(2).mouseover(function(){
+ 	showImg.hide();
+ 	showImg.eq(2).show();
+ 	showLife.show();
+ 	showLife.eq(2).hide();
+
+ });
+// BackTop
+// seeMore
+(function(){
+	var showMoreNChildren = function ($children, n) {
+	//显示某jquery元素下的前n个隐藏的子元素
+	var $hiddenChildren = $children.filter(":hidden");
+	var cnt = $hiddenChildren.length;
+	for ( var i = 0; i < n && i < cnt ; i++) {
+		$hiddenChildren.eq(i).show();
+	}
+	return cnt-n;//返回还剩余的隐藏子元素的数量
+}
+	//对页中现有的class=showMorehandle的元素，在之后添加显示更多条，并绑定点击行为
+	$("#showMoreNChildren").each(function () {
+		var pagesize = $(this).attr("pagesize") || 10;
+		var $children = $(this).children();
+		if ($children.length > pagesize) {
+			for (var i = pagesize; i < $children.length; i++) {
+				$children.eq(i).hide();
+			}
+			$('#showMore').click(function () {
+				if (showMoreNChildren($children, pagesize) <= 9) {
+					//如果目标元素已经没有隐藏的子元素了，就隐藏“点击更多的按钮条”
+					$(this).hide();
+					$('#showMoreTips').show();
+				};
+			});
+		}else{
+			$('#showMore').hide();
+		}
+	});
+		}());
+// seeMore
+});
+
+/*
+ * share to Qzone
+ */
+function shareToQzone(title,url){
+	if(url != null){
+		window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+encodeURIComponent(url+'?source=qzone')+'&title='+encodeURIComponent(title),
+                          'qzone','scrollbars=no,toolbar=0,status=0,width=600,height=450,left=' + (screen.width - 600) / 2 + ',top=' + (screen.height - 450) / 2);
+	}else{
+		window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+encodeURIComponent(location.href+'?source=qzone')+'&title='+encodeURIComponent(title),
+			'qzone','scrollbars=no,toolbar=0,status=0,width=600,height=450,left=' + (screen.width - 600) / 2 + ',top=' + (screen.height - 450) / 2);
+	}
+	
+}
+
+/*
+ * share sina weibo
+ */
+function shareToSinaWb(articleTitle, articleContent, link){
+	var t = encodeURIComponent(articleTitle);
+	if(link != null){
+        	 	var f='http://v.t.sina.com.cn/share/share.php?appkey=1269114047',u=link,p=[
+         	'&url=',encodeURIComponent(u+'?source=sina'),
+         	'&title=',t,
+         	'&content=',''||'gb2312'].join('');
+	}else{
+		var f='http://v.t.sina.com.cn/share/share.php?appkey=1269114047',u=location.href||document.location,p=[
+	        '&url=',encodeURIComponent(u+'?source=sina'),
+	        '&title=',t,
+	        '&content=',''||'gb2312'].join('');
+	}
+	function a() {
+		if(!window.open([f,p].join(''),'mb', ['scrollbars=no,toolbar=0,status=0,resizable=1,width=600,height=450,left=',(screen.width- 600)/2,',top=',(screen.height-450)/2].join('')))
+			u.href=[f,p].join('');
+	}; 
+	if(/Firefox/.test(navigator.userAgent))
+		setTimeout(a,0);
+	else
+		a();
+}
+

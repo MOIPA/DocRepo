@@ -1,0 +1,808 @@
+var Renren = Renren || {};
+if(!Renren.share){
+Renren.share = function() {
+    var isIE = navigator.userAgent.match(/(msie) ([\w.]+)/i);
+    var hl = location.href.indexOf('#');
+    var resUrl = (hl == -1 ? location.href : location.href.substr(0, hl));
+    var shareImgs = "";
+	var sl = function(str) {
+		var placeholder = new Array(23).join('x');
+		str = str
+				.replace(
+						/(https?|ftp|gopher|telnet|prospero|wais|nntp){1}:\/\/\w*[\u4E00-\u9FA5]*((?![\"| |\t|\r|\n]).)+/ig,
+						function(match) {
+							return placeholder + match.substr(171);
+						}).replace(/[^\u0000-\u00ff]/g, "xx");
+		return Math.ceil(str.length / 2);
+	};
+	var cssImport = function(){
+	    var static_url = 'http://xnimg.cn/xnapp/share/css/v2/rrshare.css';
+		var b = document.createElement("link");
+        b.rel = "stylesheet";
+        b.type = "text/css";
+        b.href = static_url;
+        (document.getElementsByTagName("head")[0] || document.body).appendChild(b)
+	};
+    var getShareType = function (dom) {
+        return dom.getAttribute("type") || "button"
+    };
+    var opts = {};
+    if(typeof(imgMinWidth)!='undefined'){
+    	opts.imgMinWidth = imgMinWidth || 60;
+    } else {
+    	opts.imgMinWidth = 60;
+    }
+    if(typeof(imgMinHeight)!='undefined'){
+    	opts.imgMinHeight = imgMinHeight || 60;
+    } else {
+    	opts.imgMinHeight = 60;
+    }
+	var renderShareButton = function (btn,index) {
+		if(btn.rendered){
+			return;
+		}
+		btn.paramIndex = index;
+        var shareType = getShareType(btn).split("_");
+        var showType = shareType[0] == "icon" ? "icon" : "button";
+        var size = shareType[1] || "small";
+        var shs = "xn_share_"+showType+"_"+size;
+        var innerHtml = [
+                         '<span class="xn_share_wrapper ',shs,'"></span>'
+                         ];
+	    btn.innerHTML = innerHtml.join("");
+	    btn.rendered = true;
+	};
+	var postTarget = function(opts) {
+		var form = document.createElement('form');
+		form.action = opts.url;
+		form.target = opts.target;
+		form.method = 'POST';
+		form.acceptCharset = "UTF-8";
+		for (var key in opts.params) {
+			var val = opts.params[key];
+			if (val !== null && val !== undefined) {
+				var input = document.createElement('textarea');
+				input.name = key;
+				input.value = val;
+				form.appendChild(input);
+			}
+		}
+		var hidR = document.getElementById('renren-root-hidden');
+		if (!hidR) {
+			hidR = document.createElement('div'), syl = hidR.style;
+			syl.positon = 'absolute';
+			syl.top = '-10000px';
+			syl.width = syl.height = '0px';
+			hidR.id = 'renren-root-hidden';
+			(document.body || document.getElementsByTagName('body')[0])
+					.appendChild(hidR);
+		}
+		hidR.appendChild(form);
+		try {
+			var cst = null;
+			if (isIE && document.charset.toUpperCase() != 'UTF-8') {
+				cst = document.charset;
+				document.charset = 'UTF-8';
+			}
+			form.submit();
+		} finally {
+			form.parentNode.removeChild(form);
+			if (cst) {
+				document.charset = cst;
+			}
+		}
+	};
+	var getCharSet = function(){
+		if(document.charset){
+			return document.charset.toUpperCase();
+		} else {
+			var metas = document.getElementsByTagName("meta");
+			for(var i=0;i < metas.length;i++){
+				var meta = metas[i];
+				var metaCharset = meta.getAttribute('charset');
+				if(metaCharset){
+					return meta.getAttribute('charset');
+				}
+				var metaContent = meta.getAttribute('content');
+				if(metaContent){
+					var contenxt = metaContent.toLowerCase();
+					var begin = contenxt.indexOf("charset=");
+					if(begin!=-1){
+						var end = contenxt.indexOf(";",begin+"charset=".length);
+						if(end != -1){
+							return contenxt.substring(begin+"charset=".length,end);
+						}
+						return contenxt.substring(begin+"charset=".length);
+					}
+				}
+			}
+		}
+		return '';
+	}
+	var charset = getCharSet();
+    var getParam = function (param){
+    	param = param || {};
+		param.api_key = param.api_key || '';
+    	param.resourceUrl = param.resourceUrl || resUrl;
+    	param.title = param.title || '';
+    	param.pic = param.pic || '';
+    	param.description = param.description || ''; 
+    	if(resUrl == param.resourceUrl){
+    		param.images = param.images || shareImgs;//一般就是当前页面的分享,因此取当前页面的img
+    	}
+    	param.charset = param.charset || charset || '';
+    	return param;
+    }
+	var onclick = function(data) {
+		var submitUrl = 'http://widget.renren.com/dialog/share';
+		var p = getParam(data);
+		var prm = [];
+		for (var i in p) {
+			if (p[i])
+				prm.push(i + '=' + encodeURIComponent(p[i]));
+		}
+		var url = submitUrl+"?" + prm.join('&'), maxLgh = (isIE
+				? 2048
+				: 4100), wa = 'width=700,height=650,left=0,top=0,resizable=yes,scrollbars=1';
+		if (url.length > maxLgh) {
+			window.open('about:blank', 'fwd', wa);
+			postTarget({
+				url : submitUrl,
+				target : 'fwd',
+				params : p
+			});
+		} else {
+			window.open(url, 'fwd', wa);
+		}
+		return false;
+	};
+	window["rrShareOnclick"] = onclick;
+	var init = function() {
+		if (Renren.share.isReady || document.readyState !== 'complete')
+			return;
+		var imgs = document.getElementsByTagName('img'), imga = [];
+		for (var i = 0; i < imgs.length; i++) {
+			if (imgs[i].width >= opts.imgMinWidth
+					&& imgs[i].height >= opts.imgMinHeight) {
+				imga.push(imgs[i].src);
+			}
+		}
+		window["rrShareImgs"] = imga;
+		if (imga.length > 0)
+			shareImgs = imga.join('|');
+		if (document.addEventListener) {
+			document.removeEventListener('DOMContentLoaded', init, false);
+		} else {
+			document.detachEvent('onreadystatechange', init);
+		}
+		cssImport();
+		var shareBtn = document.getElementsByName("xn_share");
+		var len = shareBtn?shareBtn.length:0;
+        for (var b = 0; b < len; b++) {
+            var a = shareBtn[b];
+            renderShareButton(a,b);
+        }
+		Renren.share.isReady = true;
+	};
+	if (document.readyState === 'complete') {
+		init();
+	} else if (document.addEventListener) {
+		document.addEventListener('DOMContentLoaded', init, false);
+		window.addEventListener('load', init, false);
+	} else {
+		document.attachEvent('onreadystatechange', init);
+		window.attachEvent('onload', init);
+	}
+};
+Renren.share();
+}
+
+/*
+ * Share to sohu weibo
+ */
+function shareToSohuWb(s, d, t, e){
+	var f = 'http://t.sohu.com/third/post.jsp?appkey=', u = location.href, p = [ '&url=', e(u.indexOf("?")>-1?(u+'?source=sohu'):(u+'?source=sohu')), '&title=', e(t), '&content=', 'gb2312' ].join('');
+	function a() {
+		if (!window.open([ f, p ].join(''),'tsohu',[
+			'scrollbars=no,toolbar=0,status=0,resizable=1,width=600,height=450,left=',(s.width - 600) / 2, ',top=',(s.height - 450) / 2 ].join(''))) {
+			u.href = [ f, p ].join('');
+		}
+	};
+	if (/Firefox/.test(navigator.userAgent))
+		setTimeout(a, 0);
+	else
+		a();
+}
+
+/*
+ * share to sohu bai
+ */
+function shareToSohuBai(articleTitle){
+	var f = 'http://bai.sohu.com/share/blank/addbutton.do?link=', u = document.location+'?source=bai', l = articleTitle, p = [encodeURIComponent(u), '&title=', encodeURIComponent(l) ].join('');
+	function a() {
+		if (!window.open([ f, p ].join(''),'sohushare',['toolbar=0,status=0,resizable=1,width=600,height=450,left=',(screen.width - 600) / 2, ',top=',(screen.height - 450) / 2 ].join('')))
+			u.href = [ f, p ].join('');
+	};
+	if (/Firefox/.test(navigator.userAgent))
+		setTimeout(a, 0);
+	else
+		a();
+}
+
+/*
+ * share to Myspace
+ */
+function shareToMyspace(articleTitle){
+	window.open(
+		'http://www.myspace.cn/Modules/PostTo/Pages/DefaultMblog.aspx?t='+ encodeURIComponent(articleTitle) 
+			+ '&u='+ encodeURIComponent(location.href+'?source=myspace')
+			+ '&source=bookmark', 
+		'myspace',
+		'scrollbars=no,width=600,height=450,resizable=yes,left='+ (screen.width - 600) / 2 + ',top='+ (screen.height - 450) / 2);
+}
+
+/*
+ * share to douban
+ */
+function shareToDouban(articleTitle){
+	window.open('http://www.douban.com/recommend/?title=' + encodeURIComponent(articleTitle)
+			+'&url=' + encodeURIComponent(location.href+'?source=douban'),'douban',
+			'toolbar=0,resizable=1,scrollbars=no,status=1,width=600,height=450,left='+ (screen.width - 600) / 2 + ',top='+ (screen.height - 450) / 2);
+}
+
+/*
+ * share google buzz
+ */
+function shareToGoogleBuzz(){
+	window.open('http://www.google.com/buzz/post?hl=zh-CN&url='+ encodeURIComponent(window.location.href+'?source=google'),
+			'buzz','scrollbars=no,width=600,height=450,location=yes,menubar=no,toolbar=no,dialog=yes,alwaysRaised=yes,left=' + (screen.width - 600) / 2 + ',top=' + (screen.height - 450) / 2);
+}
+
+/*
+ * share baidu hi
+ */
+function shareToBaiduHi(articleTitle){
+	window.open('http://apps.hi.baidu.com/share/?title='+encodeURIComponent(articleTitle)
+			+'&url='+encodeURIComponent(document.location+'?source=baidu'),'baiduhi','scrollbars=no,width=600,height=450,status=no,resizable=yes,left=' + (screen.width - 600) / 2 + ',top=' + (screen.height - 450) / 2);
+}
+
+/*
+ * share to Qzone
+ */
+function shareToQzone(title){
+	window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+encodeURIComponent(location.href+'?source=qzone')+'&title='+encodeURIComponent(title),
+			'qzone','scrollbars=no,toolbar=0,status=0,width=600,height=450,left=' + (screen.width - 600) / 2 + ',top=' + (screen.height - 450) / 2);
+}
+
+/*
+ * share to renren
+ */
+function shareToRenren(articleTitle,description) {
+	var rrShareParam = {
+            resourceUrl : 'http://share.renren.com/share/buttonshare.do?link='+encodeURIComponent(location.href+'?source=renren'),      //分享的资源Url
+            srcUrl : '',       //分享的资源来源Url,默认为header中的Referer,如果分享失败可以调整此值为resourceUrl试试
+            pic : '',           //分享的主题图片Url
+            title : articleTitle,          //分享的标题
+            description : description       //分享的详细描述
+     };
+     rrShareOnclick(rrShareParam);
+
+}
+
+/*
+ * share to kaixin
+ */
+function shareToKaixin(articleTitle, articleContent){
+	window.open('http://www.kaixin001.com/repaste/share.php?rtitle='+encodeURIComponent(articleTitle)
+			+'&rurl='+encodeURIComponent(location.href+'?source=kaixin')
+			+'&rcontent='+encodeURIComponent(articleContent),'kaixin001','scrollbars=no,width=600,height=450,left='+ (screen.width - 600) / 2 + ',top='+ (screen.height - 450) / 2);
+}
+
+/*
+ * share sina weibo
+ */
+function shareToSinaWb(articleTitle, articleContent){
+	var t = encodeURIComponent(articleTitle);
+	var f='http://v.t.sina.com.cn/share/share.php?appkey=1269114047',u=location.href||document.location,p=[
+	'&url=',encodeURIComponent(u+'?source=sina'),
+	'&title=',t,
+	'&content=',''||'gb2312'].join('');
+	function a() {
+		if(!window.open([f,p].join(''),'mb', ['scrollbars=no,toolbar=0,status=0,resizable=1,width=600,height=450,left=',(screen.width- 600)/2,',top=',(screen.height-450)/2].join('')))
+			u.href=[f,p].join('');
+	}; 
+	if(/Firefox/.test(navigator.userAgent))
+		setTimeout(a,0);
+	else
+		a();
+}
+
+/*
+ * share to tencent weibo 
+ */
+function shareToTencentWb(webServer, title){
+    var _t = encodeURIComponent(title||document.title);
+    var _url = encodeURIComponent(document.location+"?source=tencentblog");
+    var _appkey = encodeURI("4d65adac398b435e8e2dc7cbf5a4f742");
+    var _pic = encodeURI('');
+    var _site = webServer;
+    var _u = 'http://v.t.qq.com/share/share.php?url='+_url+'&appkey='+_appkey+'&site='+_site+'&pic='+_pic+'&title='+_t;
+    window.open( _u,'', 'width=700, height=680, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, location=yes, resizable=no, status=no' );
+}
+
+function sekhsearch(referer){
+    var url = "/article/seKeyword.do?";
+    var pars = "referer=" + encodeURIComponent(referer) + "&articleId=" + jQuery("#articleId").val();
+     jQuery.ajax({
+		type: "post",
+		url: url, 
+		dataType : "text",
+		data : pars, 
+		complete : userInfoCallback
+	});
+
+}
+
+function userInfoCallback(xml){
+    var userRoot = jQuery(xml).find("user:eq(0)");
+	var shortMsgNode = userRoot.find("short-msg:eq(0)");
+	var unreadValue = shortMsgNode.find("unread:eq(0)").text();
+	var blogidValue = shortMsgNode.find("blogid:eq(0)").text();
+    document.getElementById('weibo_id').href = document.getElementById('weibo_id').href+"?blog_id="+blogidValue;
+	blogIdVal = blogidValue;
+	if(unreadValue > 0){
+		document.getElementById('message_id').text = "有新消息";
+		document.getElementById('message_id').title = "您有新的消息";
+	}
+}
+
+function updateSEBox(lsXmlHttp) {
+	setTimeout(function(){ 
+		var resp = lsXmlHttp.responseText;
+		var func = new Function("return " + resp);
+		var objt = func();
+		
+		if(objt == null) 
+			return;
+		var innerHTML="<div class=\"Search_engine_line\">" 
+			+ $("welcomeStartMsg").value + objt.searchFrom + $("welcomeEndMsg").value 
+			+ $("getMoreStartMsg").value  +
+			"<a href=\"" + objt.keywordURL +"\">" + objt.keyword
+			+ "</a>"  + $("getMoreEndMsg").value  +"<br />";
+		
+		if (objt.Article && objt.Article[0]) 
+			innerHTML +=  $("getRelateArticleMsg").value  + "<a href=\""
+			+ objt.Article[0].url + "\">" + objt.Article[0].Title +"</a>";
+		
+		innerHTML +="</div>";
+		
+		$("search_engine_box").update(innerHTML);
+		$("search_engine_box").show();
+	},500);		
+}
+
+/**
+ * For user's subscribe
+ */
+function eale$(id){
+	return document.getElementById(id);
+}
+function hideeler(c,m,domain){
+	eale$(m).style.display="none";
+	eale$(c).src = domain + "/ealert_arrow0.gif";
+    eale$(c).onclick = function(){showeler(c,m,domain)};
+}
+function showeler(c,m,domain){
+	eale$(c).src = domain + "/ealert_arrow1.gif";
+	eale$(m).style.display = "block";
+    eale$(c).onclick = function(){hideeler(c,m,domain)};  
+}
+
+
+var friend='好友';
+var message='消息';
+var collection='收藏';
+var group='圈子';
+var thread='帖子';
+var blog='博客';
+var blogIdVal=null;
+function createErrorMessage(errorMessage) {
+	var viewMessage="";
+	
+	viewMessage += "<table cellpadding=\"3\" cellspacing=\"0\" border=\"0\">";
+	viewMessage += "<tr valign=\"top\">";
+	viewMessage += "<td width=\"1%\"><img src=\"http://image.ceconline.com/error-16x16.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"\"></td>";
+	viewMessage += "<td width=\"99%\">";
+	viewMessage += "<font color='red'>";
+	viewMessage += errorMessage;
+	viewMessage += "</font></td></tr></table>";
+	document.getElementById("errorMessage").innerHTML=viewMessage;
+
+}
+
+function displayNone(targetName){
+	var rdiv = document.getElementById(targetName);
+	if (!bOnWin && rdiv) {
+		rdiv.style.display = 'none';		
+	}
+}
+
+var errorMessage1='不能发表空白的文章，请输入内容然后发表。';
+var errorMessage2='评论不能超过1000个字!'; 
+var errorMessage3='您的评论已提交，请不要重复发表评论!'; 
+var errorMessage4='您发表的内容需要经过审核才能发表，请留意您的站内短消息查看审核通知。';
+var errorMessage5='由于您严重违反了论坛规则，您的操作将被禁止。如需查询和申诉，请点击<a href="mailto:chnserv@globalsources.com">这里</a>联系论坛管理员！'
+var errorMessage6='文章标题不能包含%';
+var errorMessage7='评论内容不能包含%';
+var errorMessage8='请输入正确的验证码';
+var errorMessage9='您的评论提交成功，但需由编辑审核才能发表，请耐心等待。';
+var alertMessage1='您已经进行了投票';
+var alertMessage2='您的投票已记录，谢谢您的参与'; 
+var alertMessage3='您不能对自己发表的内容进行投票'; 
+var alertMessage4='系统发生错误。请联系系统管理员';
+var articleHotcomment='文章评论';
+var globalCommentMore='更多评论';
+var articleHotpollcomment='热门经理人调查评论';
+var globalIfriend='网友';
+var globalComment='评论';
+var globalQuote='引用本帖';
+var globalQuote1='引用';
+var articleCommentReply='回复';
+var articleCommentReply1='回复该主题';
+var globalJubao='举报';
+var articleComment='最新文章评论';
+var articleCommentNum1='共有';
+var articleCommentNum2='条文章评论';
+var articleCommentNum3='条经理人调查评论';
+var articlePollcomment='最新经理人调查评论';
+var homepageReturntop='回到页首';
+var articleCommentAnnounce='以上读者评论不代表世界经理人网站立场和观点';
+var artnoHotDes1='还没有最热门文章评论，<br/> 快给你认为的“很实用”的评论投票吧！<br/>最热门文章评论由你的投票决定。<br/>已有';
+var pollnoHotDes1='还没有最热门经理人调查评论，<br/> 快给你认为的“很实用”的评论投票吧！<br/>最热门经理人调查评论由你的投票决定。<br/>已有';
+var noHotDes2='位网友发表了评论.';
+var artnoHotComment='热门文章评论（暂无）';
+var pollnoHotComment='热门经理人调查评论（暂无）';
+var noHotComment='目前没有评论……';
+var noComment='暂无评论';
+var nohotComment='热门评论（暂无）';
+
+var clickView='点击查看>>';
+var topPage='回到页首';
+
+var checkCode='验证码';
+var imageNotClear='看不清楚？换一个';
+var checkCodeTip='请输入问题答案';
+var mobileTerminal='&nbsp;&nbsp;用<a href="http://www.ceconline.com/ST/HF/Androidappdownload.HTM">移动端</a>';
+
+function callServer(postform) {
+
+	var isAnonymous="";
+	if(document.getElementById("isAnonymous") && document.getElementById("isAnonymous").checked){
+	    isAnonymous="Y";
+	}
+	
+	if(document.getElementById("textareaTip")){
+		var textareaTip = document.getElementById("textareaTip").value;
+		if(document.getElementsByName("body")[0].value == textareaTip){
+			document.getElementsByName("body")[0].value = "";
+		}
+	}
+	
+	var actionUrl = postform.action.value;
+	var forumId = postform.forumID.value;
+	var userId = postform.userId.value;
+	var objId = document.getElementById("objectID").value;
+	var objType = postform.objType.value;
+	var numResults = document.getElementById("numResults").value;
+	var isLoginComment = postform.isLoginComment.value;
+	if(objType == "COURSE"){
+		var overallScore = postform.overallScore.value;
+		var designScore = postform.designScore.value;
+		var meterialScore = postform.meterialScore.value;
+		var lecturerScore = postform.lecturerScore.value;
+		var fromUrl = document.getElementById("fromUrl").value;
+	}else{
+		var articleId = document.getElementById("articleId").value;
+	}
+	//comment desc
+	var bodyValue = postform.body.value;
+	var commentDesc = encodeURIComponent(encodeURIComponent(bodyValue));
+	if(typeof(bodyValue)  == "undefined" || ''==bodyValue){
+		commentDesc  = encodeURIComponent(encodeURIComponent(document.getElementsByName("body")[0].value));
+	}
+    var captchaElement = document.getElementById("captcha");
+    var captchaValue = (captchaElement != null) ? captchaElement.value : "";
+    
+	var url = "/article/ajaxComment.do"; 
+	if(objType == "COURSE"){
+		var pars = "ajax=yes&action=" + null + "&forumID=" + forumId
+				+ "&objectID=" + objId + "&objectType=" + objType + "&userID="
+				+ userId + "&numberResults=" + numResults + "&content="
+				+ commentDesc + "&isAnonymous=" + isAnonymous + "&overallScore="
+				+ overallScore + "&designScore=" + designScore + "&meterialScore="
+				+ meterialScore + "&lecturerScore=" + lecturerScore + "&fromUrl=" + fromUrl
+				+ "&formanycomment=true";
+	}else{
+		var pars = "ajax=yes&action=" + null + "&forumID=" + forumId+ "&objectID=" + objId+ "&objectType=" + objType+ "&userID=" + userId+ "&numberResults=" + numResults+ "&content=" + commentDesc + "&articleId=" +articleId+"&isAnonymous="+isAnonymous+"&isLoginComment="+isLoginComment; 
+	}
+    
+	if (captchaValue != "") {
+        var userIP = document.getElementById("userIP").value;
+        pars += "&captcha=" + captchaValue + "&userIP=" + userIP;
+       
+    }
+    if (document.getElementById("captChar") != null){
+        document.getElementById("captChar").innerHTML = "";
+    }
+    
+
+	if(objType=="STATIC_HTML")
+	{
+		var subjectContent = encodeURIComponent(encodeURIComponent(document.getElementById("subject").value));
+		var fromUrl = document.getElementById("fromUrl").value;
+		pars += "&subject="+subjectContent+"&fromUrl="+fromUrl;
+	}
+	if( document.getElementById("isformanycomment")){
+		pars=pars+"&formanycomment=true";
+	}
+	if( document.getElementById("cacheKey")){
+		pars=pars+"&cacheKey="+document.getElementById("cacheKey").value;
+	}
+
+	 jQuery.ajax({
+		type: "post",
+		url: url, 
+		dataType : "xml",
+		data : pars, 
+		success : postit
+	});
+}
+
+function postit(xml) {
+            var hasError = jQuery(xml).find("commentResult:eq(0)").find("hasError:eq(0)").text();
+			if(hasError == "true"){
+                var errorCode = jQuery(xml).find("commentResult:eq(0)").find("errorCode:eq(0)").text();
+				var errorMessage;
+				if(errorCode == "noLogin"){
+					window.location= "/login.do?fromWhere="+window.location.href ;
+				}else{		
+					if(errorCode == "E001" && document.postform.objType.value != 'COURSE'){
+						errorMessage=errorMessage1;
+					}else if(errorCode == "E001" && document.postform.objType.value == 'COURSE'){
+						errorMessage=errorMessage9;
+					}else if(errorCode == "E002"){
+						errorMessage=errorMessage2;
+					}else if(errorCode == "E003"){
+					    errorMessage=errorMessage3;//added by irene MR #11163
+					}else if(errorCode =="E004"){
+						errorMessage=errorMessage4;
+					}else if (errorCode =="E005" || errorCode =="E006"){
+                       errorMessage = jQuery(xml).find("commentResult:eq(0)").find("errorMessage:eq(0)").text();
+					}else if(errorCode =="E007"){
+					   errorMessage=errorMessage5;
+					}else if(errorCode =="E008"){
+					   errorMessage=errorMessage6;
+					}else if(errorCode =="E009"){
+					   errorMessage=errorMessage7;
+					}else if(errorCode =="E010"){
+					   errorMessage=errorMessage8;
+	                   var refresh = new Date();
+	                   if(document.postform.objType.value == 'COURSE'){
+	                	   document.getElementById("captChar").innerHTML = "<span class=\"user_fb_bold\">" + checkCode +": </span><input type=\"text\" name=\"captcha\" id=\"captcha\" tabindex=\"4\" maxlength=\"75\" size=\"8\" style=\"margin:0;\" class=\"TT_inp1\" />" + 
+								  "<span style=\"color:#ff0000;\">*</span>" + 
+								  "<img width=\"90px\" height=\"26px\" onclick=\"javascript:this.src='/Captcha.do?'+(new Date().getTime());\" src=\"/Captcha.do?" + "stamp="+ refresh.getTime() +"\" style=\"vertical-align:middle\" id='checkCodeImage' />" + 
+								  "<a href=\"javascript:document.getElementById('checkCodeImage').onclick();\">"+imageNotClear+"</a>";
+	                   }else{
+	                	   document.getElementById("captChar").innerHTML = "<div class=\"left\" style=\"margin-top:18px\">"+ checkCode +": </div>" +
+                           "<div class=\"right\"><input type=\"text\" name=\"captcha\" id=\"captcha\" />&nbsp;<img id='checkCodeImage' style=\"vertical-align:middle\" src=\"/Captcha.do?" + "stamp="+ refresh.getTime() +"\"  onclick=\"javascript:this.src='/Captcha.do?'+(new Date().getTime());\">" + 
+							"&nbsp;<a href=\"javascript:document.getElementById('checkCodeImage').onclick();\">"+ imageNotClear + "</a><br><font color=\"red\">" + checkCodeTip + "</font></div>";
+	                   }
+					}else if(errorCode =="E011"){
+						errorMessage=errorMessage8;
+					}else if(errorCode =="E012"){
+						errorMessage=errorMessage9;
+					}else if(errorCode =="E013"){
+						errorMessage=errorMessage4;
+					}else if(errorCode =="E014"){
+						errorMessage=errorMessage9;
+					}else{
+						errorMessage=alertMessage4;
+					}
+						
+					document.getElementById("errorMessage").style.display = "";
+					createErrorMessage(errorMessage);
+				}
+			}else if(typeof(isPopComment)!='undefined' || hasError=="false"){
+				alert("评论提交成功");
+				//this method is used to distinguish berween article new pages comment and other comment
+				if(document.getElementById("ssoLoginParam").value==""){
+					 window.parent.location.reload(true);
+					 }
+			}
+			else{
+				document.getElementById("errorMessage").style.display = "none";
+				document.postform.body.value="";
+				document.getElementById("errorMessage").innerHTML="";
+                var postUrl = jQuery(xml).find("commentResult:eq(0)").find("postUrl:eq(0)").text();
+				var objType = document.postform.objType.value;
+				var isformanycomment;
+				if(document.postform.isformanycomment)
+					isformanycomment = document.postform.isformanycomment.value;
+				if(objType=='ARTICLE' || objType=='STATIC_HTML' || objType=='FORUM' || objType=='VIDEO' || objType=='COURSE'){
+					var refresh = new Date();
+					document.getElementById("staticFrame").src=document.getElementById("staticFrame").src +"&stamp="+ refresh.getTime();
+				}else{
+					if(!isformanycomment)
+					window.location=postUrl;
+				}
+			}
+			if(refershIframe){
+				afterComment();
+			}
+		
+	
+}
+
+function getArtComment(articleId,forumId){
+	var url = "/article/ajaxComment.do";
+	var action = "list";
+	var objectID = articleId;
+	var objectType = "ARTICLE";
+	var numberResults = 5;
+	var forumId = forumId;
+	var pars = "objectID="+objectID+"&objectType="+objectType+"&action="+action+"&numberResults="+numberResults+"&forumID="+forumId + "&d=" + (new Date()).getTime();	
+	jQuery.ajax({
+		type: "post",
+		url: url, 
+		dataType : "xml",
+		data : pars, 
+		success : function(xml){
+			var count =jQuery(xml).find("CommentList:eq(0)").find("count:eq(0)").text();
+			if(document.getElementById("topCommentCount") != null) {
+					document.getElementById("topCommentCount").innerHTML = count;
+			}
+			if( document.getElementsByClassName('topCommentCount') != null &&  document.getElementsByClassName('topCommentCount').length > 0) {
+				for(var i=0; i< document.getElementsByClassName('topCommentCount').length;i++) {
+					 document.getElementsByClassName('topCommentCount')[i].innerHTML = count;
+				}
+			}		
+		}
+	});
+}
+
+function afterComment(){	
+	document.frames('staticFrame').location.reload();
+}
+
+(function($){
+	$(function(){
+		cecUI.showOverlay({
+			disBodyClick:true,
+			trigger:$("#subNews"),
+			target:$("#loginBox")
+		});
+		cecUI.showOverlay({
+			disBodyClick:true,
+			trigger:$(".SubScore"),
+			target:$("#ScoreBox")
+		});
+        if($('.fixedTop').length){
+		$(window).scroll(function(){
+			if($(window).scrollTop() > 150){
+				$('.fixedTop').fadeIn();
+			} else {
+				$('.fixedTop').fadeOut();
+			}
+		})
+		$('.fixedTop').click(function(){
+			$(window).scrollTop(0);
+		})
+	}
+
+	if($('.logPwdInput').length){
+		$('.logPwdInput').focus(function(){
+			$('.pwdTips').hide();
+		})
+		$('.logPwdInput').blur(function(){
+			if($(this).val() == ''){
+				$('.pwdTips').show();
+			} else {
+				$('.pwdTips').hide();
+			}
+		})
+	}
+
+	});
+}(jQuery))
+
+/*
+	推荐功能
+*/
+var recEvent = {}
+recEvent.show = function(ele,recId,offset){
+	var eP = recEvent.getPosition(ele);
+	if(!offset) offset = [0,0];
+	clearTimeout(this.outEvent);
+	$(recId).css({
+		"left":(eP[0]+offset[0])+"px",
+		"top":(eP[1]+offset[1])+"px",
+		display:"block"
+	});
+}
+recEvent.getPosition = function(tag){
+	var Position = [0,0];
+	var x = 0;
+	var y = 0;
+	while (tag) {
+		tn = tag.tagName.toUpperCase();
+		if(tn == "BODY"){
+		   Position[0] = Position[0] - x;
+		   Position[1] = Position[1] - y;
+		   break;
+		} 
+		x = tag.offsetLeft;
+		Position[0] += tag.offsetLeft;		
+		y = tag.offsetTop;
+		Position[1] += tag.offsetTop;
+		tag = tag.offsetParent;
+	}
+	return Position;
+}
+
+recEvent.show_rec = function(){
+	clearTimeout(this.outEvent);
+}
+recEvent.out = function(recId){
+	recEvent.outEvent = setTimeout(function(){
+		$(recId).css({
+			display:"none"
+		});
+	},300);
+}
+
+function vote(option,pollId,objectId)
+{
+	
+	var articleId = document.getElementById("articleId").value;
+	var objectType = document.getElementById("objType").value;
+	if (userId == "null"){
+		window.location= "/login.do?fromWhere="+window.location.href ;
+		return;
+	   // userId = userIdNew;
+	    //userId = userId.substr(0,10);
+	}
+	var url = "/article/ajaxVote.do";
+	var pars = "objectId=" + objectId + "&option=" + option + "&userId=" + userId + "&pollId="+pollId +"&articleId=" + articleId + "&objectType=" + objectType;	
+	jQuery.ajax({
+		type: "post",
+		url: url, 
+		dataType : "xml",
+		data : pars, 
+		success : function(xml){refreshPost(xml,option,objectId);}
+	});
+}
+
+function refreshPost(xml,option,objectId) {
+	
+	var result = jQuery(xml).find("PollResult:eq(0)").text();
+	var results = result.split(",");
+	var status = results[0].trim();
+	var voteCount = results[1];
+	if(status == "alreadyVoted"){
+		alert(alertMessage1);
+		return;
+	}else if(status =="succVoted"){
+		alert(alertMessage2);
+	}else if(status=="postOwner"){
+		alert(alertMessage3);
+		return;
+	}else {
+		alert(alertMessage4);
+		return;
+	}				
+	document.getElementById(objectId+"_"+option).innerHTML = "("+voteCount+")";
+	if(option==0 && voteCount>0){
+		document.getElementById(objectId+"_"+option).style.color="red";
+	}
+
+}

@@ -1,0 +1,925 @@
+
+var cecUI = {
+	version: "1.0"
+};
+
+(function($){
+	// init hover function
+	/* UI Style: ui_hover */
+	/* UI Attribute: hoverCls */
+	cecUI.initHover = function() {
+		$(".ui_hover").each(function(){
+			var $dom = $(this);
+			if($dom.data("hasInitedHover"))
+				return true;
+			var hoverCls = $dom.attr("hoverCls");
+			if (hoverCls) {
+				$dom.mouseenter(function(){
+					$dom.addClass(hoverCls);
+				}).mouseout(function(event){
+					var rt = event.relatedTarget;
+					if(rt && rt != $dom.get(0) && !$.contains($dom.get(0), rt)) {
+						$dom.removeClass(hoverCls);
+					}
+				});
+			}
+			$dom.data("hasInitedHover",true);
+		});
+	};
+
+	// init input tip function
+	/* UI Style: ui_input_tip */
+	/* UI Attribute: tip, tipCls */
+	cecUI.initInputTip = function() {
+		$(".ui_input_tip").each(function(){
+			var $input = $(this);
+			if($input.data("hasInitedInputTip"))
+				return true;
+			var tip = $input.attr("tip");
+			var tipCls = $input.attr("tipCls");
+			if (tip) {
+				if ($input.attr("value")==null || $input.attr("value")=="") {
+					$input.attr("value",tip);
+					if(tipCls) $input.addClass(tipCls);
+				}
+				$input.bind("focus",function(){
+					if($input.attr("value") == tip) {
+						$input.attr("value","");
+						if(tipCls) $input.removeClass(tipCls);
+					}
+				}).bind("blur",function(){
+					if($input.attr("value") == "") {
+						$input.attr("value",tip);
+						if(tipCls) $input.addClass(tipCls);
+					}
+				});
+			}
+			$input.data("hasInitedInputTip",true);
+		});
+	};
+
+	//isMobile
+	cecUI.isMobileDevice = function() {
+    	if (/(iphone|ios|android|mini|mobile|mobi|Nokia|Symbian|iPod|iPad|Windows\s+Phone|MQQBrowser|wp7|wp8|UCBrowser7|UCWEB|360\s+Aphone\s+Browser)/i.test(navigator.userAgent)) {
+        	return true;
+    	}
+    	return false;
+	}
+	
+	// multi input tip function
+	cecUI.multiInputTips = function(param){
+		var $select=param.select,tips=param.tips,$input=param.input,tipCls=param.tipCls;
+		var cur = $select.get(0) ? $select.get(0).selectedIndex : 0;
+		$select.change(function(){
+			if($input.val() == tips[cur]) {
+				cur = $select.get(0).selectedIndex;
+				$input.val(tips[cur]);
+			}
+			cur = $select.get(0).selectedIndex;
+		});
+		$input.mouseenter(function(){
+			if($input.val() == tips[cur]) {
+				$input.val('').focus();
+				if(tipCls) $input.removeClass(tipCls);
+			}
+		}).bind('mouseleave blur',function(){
+			if($input.val() == '') {
+				if(tipCls) $input.addClass(tipCls);
+				$input.val(tips[cur]).blur();
+			}
+		}).trigger('mouseleave');
+	}
+
+	// private show & hide function for inner call
+	function _showAndHide(param) {
+		var triggerType=param.triggerType,triggerId=param.triggerId,triggerStyle=param.triggerStyle,targetId=param.targetId;
+		var posType=param.posType,left=param.left,top=param.top,disBodyClick=param.disBodyClick,isShowed=param.isShowed;
+		var triggerHtml = param.triggerHtml;
+		var $trigger = $("#"+triggerId);
+		var $target = $("#"+targetId);
+		var $body = $('body');
+		if(triggerHtml){
+			if(isShowed){
+				$trigger.data("showHtml",$trigger.html());
+				$trigger.data("hideHtml",triggerHtml);
+			}else{
+				$trigger.data("showHtml",triggerHtml);
+				$trigger.data("hideHtml",$trigger.html());
+			}		
+		}
+		//move to be body's child
+		if (posType) { $body.append($target); }
+		if (!left) { left = 0; }
+		if (!top) { top = 0; }
+		if (triggerType == "click"){
+			$trigger.click(function(event){
+				setPos();
+				if(triggerStyle){$trigger.toggleClass(triggerStyle);}
+				if($target.is(":hidden")){
+					beforeFunc("show");
+					if(triggerHtml){$trigger.html($trigger.data("showHtml"));}
+				}else{
+					beforeFunc("hide");
+				}
+				$target.toggle();
+				if($target.is(":hidden")){
+					if(triggerHtml){$trigger.html($trigger.data("hideHtml"));}
+					afterFunc("hide");
+				}else{
+					afterFunc("show");
+				}
+			});
+			if(!disBodyClick){
+				$body.bind("click",function(event){
+					var tar = event.target;
+					if (tar && tar.id!=targetId && tar.id!=triggerId
+							&& $(tar).parents("#"+targetId+",#"+triggerId).length == 0) {
+						beforeFunc("hide");
+						$target.hide();
+						if(triggerStyle){$trigger.removeClass(triggerStyle);}
+						if(triggerHtml){$trigger.html($trigger.data("hideHtml"));}
+						afterFunc("hide");
+					}
+				});
+			}
+		}else if(triggerType == "mouseover") {
+			$trigger.mouseenter(function(event){
+				setPos();
+				beforeFunc("show");
+				if(triggerStyle){$trigger.addClass(triggerStyle);}
+				if(triggerHtml){$trigger.html($trigger.data("showHtml"));}
+				$target.show();
+				afterFunc("show");
+			});
+			$("#"+triggerId+",#"+targetId).mouseleave(function(event){
+				var rt = event.relatedTarget;
+				if(!rt || (rt && rt.id != targetId && rt.id != triggerId && 
+					$(rt).parents("#"+triggerId+",#"+targetId).length==0)) {
+					beforeFunc("hide");
+					if(triggerStyle){$trigger.removeClass(triggerStyle);}
+					$target.hide();
+					if(triggerHtml){$trigger.html($trigger.data("hideHtml"));}
+					afterFunc("hide");
+				}
+			});
+		}
+		
+		function setPos(){
+			var triggerH = $trigger.outerHeight();
+			var targetH = $target.outerHeight();
+			var triggerW = $trigger.outerWidth();
+			var targetW = $target.outerWidth();
+			var triggerT = $trigger.offset().top;
+			var triggerL = $trigger.offset().left;
+			
+			var bodyTop = ($body.css('position').toLowerCase()=='relative') ? parseInt($body.css('top')) : 0;
+			
+			if(posType == "manual") {
+				$target.css({left:left+"px",top:(top-bodyTop)+"px"});
+			}else if(posType == "bottom") {
+				$target.css({left:(triggerL+left)+"px",top:(triggerT+triggerH+top-bodyTop)+"px"});
+			}else if(posType == "top") {
+				$target.css({left:(triggerL+left)+"px",top:(triggerT-targetH+top-bodyTop)+"px"});
+			}else if(posType == "left") {
+				$target.css({left:(triggerL-targetW+left)+"px",top:(triggerT+top-bodyTop)+"px"});
+			}else if(posType == "right") {
+				$target.css({left:(triggerL+triggerW+left)+"px",top:(triggerT+top-bodyTop)+"px"});
+			}else if(posType == "bottom_right") {
+				$target.css({left:(triggerL+triggerW-targetW+left)+"px",top:(triggerT+triggerH+top-bodyTop)+"px"});
+			}else if(posType == "cover") {
+				$target.css({left:(triggerL+left)+"px",top:(triggerT+top-bodyTop)+"px"});
+			}
+		}
+		function beforeFunc(action) {
+			if(param.beforeHide && action=="hide") param.beforeHide($trigger,$target);
+			if(param.beforeShow && action=="show") param.beforeShow($trigger,$target);
+		}
+		function afterFunc(action) {
+			if(param.afterHide && action=="hide") param.afterHide($trigger,$target);
+			if(param.afterShow && action=="show") param.afterShow($trigger,$target);
+		}
+	}
+
+	// init click show function
+	cecUI.clickShow = function(param) {
+		param.triggerType = "click";
+		_showAndHide(param);
+	};
+
+	// init mouseover show function
+	cecUI.moShow = function(param) {
+		param.triggerType = "mouseover";
+		_showAndHide(param);
+	};	
+
+	// init multi-trigger mouseover show function
+	cecUI.mulMoShow =function(param) {
+		var $triggers = param.triggers;
+		param.triggerType = "mouseover";
+		$triggers.each(function(index){
+			if (!this.id || this.id == "") {
+				this.id = "___UI_trigger"+index+"_"+param.targetId;
+			}
+			param.triggerId = this.id;
+			_showAndHide(param);
+		});
+	}
+	
+	// init custom select function
+	/* UI Attribute: optionVal */
+	cecUI.customSelect = function(param) {
+		var $trigger = $("#"+param.triggerId);
+		var $target = $("#"+param.targetId);
+		var $optText = $("#"+param.optTextShowId);
+		var $optValue = $("#"+param.valueInputId);
+		var curOptStyle = param.optionStyle;
+		var initValue = param.initValue;
+		var $opts = $target.children();
+		var curIndex = 0;
+		
+		$opts.each(function(index,elem){
+			$(elem).data("index",index);
+		});
+		if(curOptStyle){
+			$opts.mouseenter(function(){
+				$opts.removeClass(curOptStyle);
+				$(this).addClass(curOptStyle);
+			});
+		}
+		$opts.click(function(event){
+			var $this = $(this);
+			if(curOptStyle){
+				$opts.removeClass(curOptStyle);
+				$this.addClass(curOptStyle);
+			}
+			$optValue.attr("value",$this.attr("optionVal"));
+			$optText.html($this.html());
+			curIndex = $this.data("index");
+			if(param.triggerStyle){$trigger.removeClass(param.triggerStyle);}
+			$target.hide();
+			event.stopPropagation();
+			if(param.onchange){param.onchange($this.attr("optionVal"));}
+		});
+		param.triggerType = "click";
+		param.afterHide = function () {
+			if(curOptStyle){
+				$opts.removeClass(curOptStyle);
+				$($opts.get(curIndex)).addClass(curOptStyle);
+			}
+		};
+		_showAndHide(param);
+
+		if(initValue) {
+			$opts.filter('[optionVal="'+initValue+'"]').click();
+		} else {
+			$opts.filter(':eq(0)').click();
+		}
+	};
+	
+	// show all function, an ajax call when has "dataUrl" param
+	/* UI Attribute: dataUrl */
+	cecUI.showAll = function(param) {
+		var dataUrl = param.dataUrl;
+		var $trigger = param.trigger;
+		var triggerStyle = param.triggerStyle;
+		var triggerHtml = param.triggerHtml;
+		var displayStyle = param.displayStyle;
+		if(triggerHtml){
+			$trigger.data("oldHtml",$trigger.html());
+		}
+		var $target = param.listContainer;
+		var $hideElems;
+		
+		var $lastCont = $target.children(":last");
+		var $newConts = null;
+		$trigger.click(function() {
+			var $this = $(this);
+			if ($this.data("isShowing")) return false;
+			if(!$hideElems) {
+				$hideElems = $target.children(":hidden");
+			}
+
+			if ($this.data("isShow"))
+			{
+				$this.data("isShow",false);
+				if(param.beforeHide) param.beforeHide($trigger,$target);
+				if(dataUrl){
+					$newConts.hide();
+				}else{
+					$hideElems.hide();
+				}
+				if(triggerStyle){$trigger.toggleClass(triggerStyle);}
+				if(triggerHtml){$this.html($this.data("oldHtml"));}
+				if(param.afterHide) param.afterHide($trigger,$target);
+				return;
+			} else {
+				if (!dataUrl || $newConts){
+					if(param.beforeShow) param.beforeShow($trigger,$target);
+					if(triggerStyle){$trigger.toggleClass(triggerStyle);}
+					if(triggerHtml){$this.html(triggerHtml);}
+					if(dataUrl){
+						doShow($newConts);
+					}else{
+						doShow($hideElems);
+					}
+					if(param.afterShow) param.afterShow($trigger,$target);
+					$this.data("isShow",true);
+				} else {
+					if(param.beforeShow) param.beforeShow($trigger,$target);
+					if(triggerStyle){$trigger.toggleClass(triggerStyle);}
+					if(triggerHtml){$this.html(triggerHtml);}
+					$this.data("isShowing",true);
+					$.get(dataUrl, function(data){
+						$newConts = $(data);
+						if($lastCont.length<=0){
+							$target.append($newConts);
+						} else if($lastCont==$trigger || $lastCont.find($trigger).length>0) {
+							$lastCont.before($newConts);
+						} else {
+							$lastCont.after($newConts);
+						}
+						doShow($newConts);
+						if(param.afterShow) param.afterShow($trigger,$target);
+						$this.data("isShow",true);
+						$this.data("isShowing",false);
+					},"text");
+				}
+			}
+			
+		});
+		
+		function doShow($elem){
+			if(displayStyle)
+				$elem.css("display",displayStyle);
+			else
+				$elem.show();
+		}
+	};
+	
+	// init tab function
+	/* UI Style: ui_tab_section|ui_tab_tit|ui_tab_con */
+	/* UI Attribute: --|curStyle trigger|-- */
+	cecUI.initTab = function() {
+		$(".ui_tab_section").each(function(){
+			var $section = $(this);
+			if($section.data("hasInitedTab"))
+				return true;
+			var $tit = $(".ui_tab_tit",$section);
+			var titCurCls = $tit.attr("curStyle");
+			var eventName = "mouseover";
+			if($tit.attr('trigger') == 'click') {
+				eventName = "click";
+			}
+			var $tits = $tit.children();
+			var $con = $(".ui_tab_con",$section);
+			var $cons = $con.children();
+			$tits.each(function(index,elem){
+				$(elem).data("index",index);
+			});
+			$tits.bind(eventName, function() {
+				var $this = $(this);
+				if(titCurCls){
+					$tits.removeClass(titCurCls);
+					$this.addClass(titCurCls);
+				}
+				
+				var $curCon = $cons.eq($this.data("index"));
+				if($curCon.data("isLoading")) {
+					return true;
+				}
+				if($curCon.attr("data-url") && !$curCon.data("loaded")) {
+					$curCon.data("isLoading", true);
+					$.get($curCon.attr("data-url"), function(data){
+						$curCon.html(data);
+						$cons.hide();
+						$curCon.show();
+						$curCon.data("isLoading", false);
+						$curCon.data("loaded", true);
+						$curCon.trigger("UIEvent_Tab_ConLoaded");
+					},"text");
+				} else {
+					$cons.hide();
+					$curCon.show();
+				}
+				
+			});
+			$section.data("hasInitedTab",true);
+		});
+	};
+	
+	// init scroll function
+	/* UI Style: ui_scroll_section|ui_scroll_win|ui_scroll_con|ui_scroll_page|ui_scroll_pre|ui_scroll_next|ui_scroll_extInfo */
+	/* UI Attribute: speed autoInterval|--|scrollType(X/Y)|curStyle trigger|disableStyle|disableStyle|-- */
+	cecUI.initScroll = function(){
+		$(".ui_scroll_section").each(function(){
+			var $section = $(this);
+			if($section.data("hasInitedScroll"))
+				return true;
+			var speed = 1000;
+			if ($section.attr("speed")) {
+				speed = parseInt($section.attr("speed"));
+			}
+
+			var $win = $(".ui_scroll_win",$section);
+			var pHeight = $win.height();
+			var pWidth = $win.width();
+
+			var $page = $(".ui_scroll_page",$section);
+			var pageCurCls = $page.attr("curStyle");
+			var eventName = "mouseover";
+			if($page.attr('trigger') == 'click') {
+				eventName = "click";
+			}
+			var $pages = $page.children();
+			$pages.each(function(index,elem){
+				$(elem).data("index",index);
+			});
+			$section.on(eventName,'.ui_scroll_page > *',function(){
+				gotoPage($(this).data("index") + 1);
+			});
+			//use templet re-generate the page section 
+			function genPageSection(tpl) {
+				var pageHtmls = [];
+				for(var i=1; i<=pageCount; i++){
+					pageHtmls[i-1] = tpl.replace('%pageNum%',i);
+				}
+				$page.html(pageHtmls.join(''));
+				$pages = $page.children();
+				$pages.each(function(index,elem){
+					$(elem).data("index",index);
+				});
+			}
+
+			var $nextBtn = $(".ui_scroll_next",$section);
+			var nextCls = $nextBtn.attr("disableStyle");
+			var $preBtn = $(".ui_scroll_pre",$section);
+			var preCls = $preBtn.attr("disableStyle");
+
+			var $extInfo = $(".ui_scroll_extInfo",$section);
+			var $extInfos = $extInfo.children();
+
+			var $con = $(".ui_scroll_con",$section);
+			$con.css("position","absolute");
+			var scrollType = "Y";
+			if ($con.attr("scrollType")) {
+				scrollType = $con.attr("scrollType");
+			}
+
+			var pageCount = 1;
+			var curPageNo = 0;
+			function initCon() {
+			if (scrollType == "X") {
+				var conW = 0;
+				$con.children().each(function(){
+						$(this).css({"float":"left"});
+					conW = conW + $(this).outerWidth(true);
+				});
+				pageCount = Math.ceil(conW / pWidth);
+				//for ie6 need more width 
+					$con.width(pWidth*pageCount + 3);
+			} else {
+				var conH = 0;
+				$con.children().each(function(){
+					$(this).css({"display":"block"});
+					conH = conH + $(this).outerHeight(true);
+				});
+				pageCount = Math.ceil(conH / pHeight);
+					$con.height(pHeight*pageCount);
+			}
+				$section.data("scroll_pageCount", pageCount);
+			}
+			initCon();
+			
+			function gotoPage(pageNo) {
+				if (pageNo<1 || pageNo>pageCount || pageNo==curPageNo) {
+					return;
+				}
+				var scrollTo = -(pageNo-1) * (scrollType == "X" ? pWidth:pHeight);
+				curPageNo = pageNo;
+				updateStyle(pageNo);
+				$con.stop(true,false);
+				if (scrollType == "X") {
+					$con.animate({left:scrollTo}, speed);
+				} else {
+					$con.animate({top:scrollTo}, speed);
+				}
+			}
+
+			function lastToFirstPage() {
+				var $tempCon = $con.clone().css(scrollType=="X" ? {left:-pWidth*(pageCount-1)} : {top:-pHeight*(pageCount-1)}).appendTo($win);
+				$con.stop(true,false).css(scrollType=="X" ? {left:pWidth} : {top:pHeight});
+				$tempCon.animate((scrollType=="X" ? {left:-pWidth*pageCount} : {top:-pHeight*pageCount}), speed, function(){
+					$tempCon.remove();
+				});
+				$con.animate((scrollType=="X" ? {left:0} : {top:0}), speed);
+				curPageNo = 1;
+				updateStyle(1);
+			}
+
+			function firstToLastPage() {
+				var $tempCon = $con.clone().css(scrollType=="X" ? {left:0} : {top:0}).appendTo($win);
+				$con.stop(true,false).css(scrollType=="X" ? {left:-pWidth*pageCount} : {top:-pHeight*pageCount});
+				$tempCon.animate((scrollType=="X" ? {left:pWidth} : {top:pHeight}), speed, function(){
+					$tempCon.remove();
+				});
+				$con.animate((scrollType=="X" ? {left:-pWidth*(pageCount-1)} : {top:-pHeight*(pageCount-1)}), speed);
+				curPageNo = pageCount;
+				updateStyle(pageCount);
+			}
+			
+			function updateStyle(pageNo){
+				if (pageCurCls) {
+					$pages.removeClass(pageCurCls);
+					$($pages.get(pageNo-1)).addClass(pageCurCls);
+				}
+				if (nextCls) {
+					if (pageNo == pageCount) {
+						$nextBtn.addClass(nextCls);
+					} else {
+						$nextBtn.removeClass(nextCls);
+					}
+				}
+				if (preCls) {
+					if (pageNo == 1) {
+						$preBtn.addClass(preCls);
+					} else {
+						$preBtn.removeClass(preCls);
+					}
+				}
+				if ($extInfos.length > 0) {
+					$extInfos.hide();
+					$($extInfos.get(pageNo-1)).show();
+				}
+			}
+
+			$nextBtn.click(function(){
+				if (autoScrollInterval && curPageNo==pageCount) {
+					lastToFirstPage();
+				} else {
+					gotoPage(curPageNo+1);
+				}
+			});
+			$preBtn.click(function(){
+				if (autoScrollInterval && curPageNo==1) {
+					firstToLastPage();
+				} else {
+					gotoPage(curPageNo-1);
+				}
+			});
+
+			gotoPage(1);
+
+			var autoScrollInterval = $section.attr("autoInterval");
+			if (autoScrollInterval) {
+				function auto(){
+					clearInterval($section.data("autoScroller"));
+					$section.data("autoScroller",
+						setInterval(function(){
+							if (curPageNo==pageCount) {
+								lastToFirstPage();
+							} else {
+								gotoPage(curPageNo+1);
+							}
+						}, autoScrollInterval)
+					);
+				}
+				function pause(){
+					clearInterval($section.data("autoScroller"));
+				}
+				$con.mouseenter(pause);
+				$con.mouseleave(auto);
+				$page.mouseenter(pause);
+				$page.mouseleave(auto);
+				$nextBtn.mouseenter(pause);
+				$nextBtn.mouseleave(auto);
+				$preBtn.mouseenter(pause);
+				$preBtn.mouseleave(auto);
+				$extInfo.mouseenter(pause);
+				$extInfo.mouseleave(auto);
+				auto();
+			}
+			
+			$section.bind("reInitScroll", function(e, conHtml, pageTpl, autoPos, pageHtml){
+				if(typeof autoPos == 'undefined') autoPos=true;
+				$con.html(conHtml);
+				pHeight = $win.height();
+			    pWidth = $win.width();
+				initCon();
+				if( ! (typeof pageTpl == 'undefined' || ''==pageTpl) ) genPageSection(pageTpl);
+				if(pageHtml) {
+					$page.html(pageHtml);
+					$pages = $page.children();
+					$pages.each(function(index,elem){
+						$(elem).data("index",index);
+					});
+				}
+				if(autoPos){
+					curPageNo = 0;
+					gotoPage(1);
+				}
+			});
+			$section.data("hasInitedScroll",true);
+		});
+	};
+	
+	// show overlay function
+	cecUI.showOverlay = function(param) {
+		var $trigger = param.trigger;
+		var $target = param.target;
+		var showAtOnce = param.showAtOnce;
+		if($target.length != 1) return;
+
+		var isShowing = false;
+		$("body").append($target);
+
+		var $iframe = $("#ui_overlay_iframe");
+		if ( $.browser.msie && ($.browser.version.slice(0,3) == "6.0" || document.compatMode=="BackCompat") ) {
+			$target.css("position","absolute");
+			if($.browser.version.slice(0,3) == "6.0" && $iframe.length<=0){
+				$iframe = $('<iframe id="ui_overlay_iframe"></iframe>');
+				$iframe.css({opacity:"0","z-index":"9999997",position:"absolute",top:"0px",left:"0px",overflow:"hidden"});
+				$("body").append($iframe);
+				$iframe.hide();
+			}
+		} else {
+			$target.css("position","fixed");
+		}
+
+		var $baselay = $("#ui_overlay_baselay");
+		if($baselay.length<=0){
+			$baselay = $('<div id="ui_overlay_baselay"></div>');
+			$baselay.css({"background-color":"#000000",opacity:"0.5","z-index":"9999998",position:"absolute",top:"0px",left:"0px"});
+			$("body").append($baselay);
+		}
+		
+		var setPos = function(){
+			$iframe.width($(document).width()).height($(document).height());
+			$baselay.width($(document).width()).height($(document).height());
+			var h = $target.height();
+			var w = $target.width();
+			var top = parseInt(($(window).height()-h)/2) + "px";
+			var left = parseInt(($(window).width()-w)/2) + "px";
+			$target.css({top:top,left:left,bottom:"",right:""});
+			$target.fixed(true);
+		};
+		var show = function(){
+			if(param.beforeShow) param.beforeShow($trigger,$target);
+			$iframe.show();
+			$baselay.show();
+			$target.css({"z-index":"9999999"}).show();
+			if(param.afterShow) param.afterShow($trigger,$target);
+		};
+		var hide = function(){
+			if(isShowing){
+				if(param.beforeHide) param.beforeHide($trigger,$target);
+				$target.css({"z-index":""}).hide();
+				$baselay.hide();
+				$iframe.hide();
+				isShowing = false;
+				if(param.afterHide) param.afterHide($trigger,$target);
+			}
+		};
+
+		if($trigger) {
+		$trigger.click(function(){
+			if(isShowing)return;
+			isShowing = true;
+			setPos();
+			show();
+		});
+		}
+		
+		if(!param.disBodyClick) $baselay.click(hide);
+		$target.find(".ui_overlay_close").live('click', hide);
+		$(window).resize(function(){
+			if(isShowing){
+				setPos();
+			}
+		});
+		if(showAtOnce) {
+			isShowing = true;
+			setPos();
+			show();
+		}
+	};
+	
+	// init open popup window function
+
+	cecUI.initPopupWindow = function() {
+		var defaultParams = "toolbar=no,menubar=no,status=no,scrollbars=yes,resizable=yes,location=yes";
+		$("a.ui_popup_window").each(function(index){
+			var $dom = $(this);
+			if($dom.data("hasInitedPopupWindow"))
+				return true;
+			var url = $dom.attr("href");
+			if(!url) return;
+			$dom.attr("href","javascript:void(0);");
+			var name = "popup_window_"+index;
+			var parameters = $dom.attr("windowOptions");
+			if (!parameters) parameters = defaultParams;
+			else parameters = defaultParams + "," + parameters;
+			
+			$dom.click(function(){
+				window.open(url, name, parameters);
+			});
+			$dom.data("hasInitedPopupWindow",true);
+		});
+	};
+	
+	//init pager
+	/*
+	<div class="ui_pager" container="news_container" perpage="5">
+	  <span> Page <span class="ui_pager_cur_num"></span> of <span class="ui_pager_total_num"></span> </span>
+	  <a class="ui_pager_pre" href="#"><span>pre</span></a>
+	  <a class="ui_pager_first" href="#"></a>
+	  <span class="ui_pager_break1"> ...</span>
+	  <span class="ui_pager_links" maxLinkCnt="6">
+		  <a class="ui_pager_link" href="#">1</a>
+	  </span>
+	  <span class="ui_pager_break2">... </span>
+	  <span class="ui_pager_total_num nonLink"></span>
+	  <a class="ui_pager_next" href="#"><span>next</span></a>
+	  <span> PageNo:<input value="" size="3" type="text" class="ui_pager_input" /></span>
+	  <a class="ui_pager_go" href="#">GO</a>
+	</div>
+	*/
+	cecUI.initPager = function() {
+		$(".ui_pager").each(function(index){
+			var $dom = $(this);
+			var $container = $('#'+$dom.attr("container"));
+			if ($container.length==0)
+				return;
+			
+			var $items = $container.children();
+			var total = $items.length;
+			var per = parseInt($dom.attr("perpage")) || 10;
+			var pagecount = Math.ceil(total/per);
+			pagecount = pagecount<=0 ? 1:pagecount;
+			var cur = 0;
+			
+			var $btnFirst = $dom.find(".ui_pager_first");
+			var $btnPre = $dom.find(".ui_pager_pre");
+			var $pagebreak1 = $dom.find(".ui_pager_break1").hide();
+			var $pageLinks = $dom.find(".ui_pager_links");
+			var $pageLink = $dom.find(".ui_pager_link").clone().removeClass("ui_pager_cur");
+			var maxLinkCnt = parseInt($pageLinks.attr("maxLinkCnt")) || 6;
+			var $pagebreak2 = $dom.find(".ui_pager_break2").hide();
+			var $btnNext = $dom.find(".ui_pager_next");
+			//var $btnLast = $dom.find(".ui_pager_last");
+			var $curNumSpan = $dom.find(".ui_pager_cur_num");
+			var $totalNumSpan = $dom.find(".ui_pager_total_num");
+			var $pageInput = $dom.find(".ui_pager_input");
+			var $btnGo = $dom.find(".ui_pager_go");
+
+			var init = function(){
+				$btnFirst.html("1").click(function(){if(cur>1)gotoPage(1);});
+				//$btnLast.html(""+pagecount).click(function(){if(cur<pagecount)gotoPage(pagecount);});
+				$totalNumSpan.html(""+pagecount);
+				$btnGo.click(function(){
+					var n = parseInt($pageInput.val());
+					if(n){
+						if(n<1) n=1;
+						if(n>pagecount) n=pagecount;
+						$pageInput.val(""+n);
+						gotoPage(n);
+					}
+				});
+				$btnPre.click(function(){if(cur>1)gotoPage(cur-1);});
+				$btnNext.click(function(){if(cur<pagecount)gotoPage(cur+1);});
+				$pageLinks.on("click",".ui_pager_link",function(){
+					if(!$(this).hasClass("ui_pager_cur"))
+						gotoPage(parseInt(this.innerHTML));
+				}).html("");
+				gotoPage(1);
+			};
+
+			var gotoPage = function (n){
+				if(n<1 || n>pagecount || cur===n) return;
+				
+				cur = n;
+				changeHTML();
+				showFun((n-1)*per, n*per>=total? total-1 : n*per-1);
+			}
+
+			var showFun = function (start,end){
+				$items.hide().filter(function( index ) {
+					return index>=start && index<=end;
+				}).show();
+			}
+
+			var changeHTML = function(){
+				$curNumSpan.html(""+cur);
+
+				var rangeL = cur%maxLinkCnt==0 ? maxLinkCnt-1 : (cur%maxLinkCnt-1);
+				var rangeH = cur%maxLinkCnt==0 ? 0 : maxLinkCnt-cur%maxLinkCnt;
+				var low = cur - rangeL;
+				var high = cur + rangeH;
+				if (high > pagecount) {
+					high = pagecount;
+				}
+				
+				if(cur == 1){
+					$btnPre.addClass("ui_pager_disable");
+				}else{
+					$btnPre.removeClass("ui_pager_disable");
+				}
+				if(cur == pagecount){
+					$btnNext.addClass("ui_pager_disable");
+				}else{
+					$btnNext.removeClass("ui_pager_disable");
+				}
+				
+				if(high < pagecount){
+					$pagebreak2.show();
+					$totalNumSpan.show();
+					
+					$btnFirst.hide();
+					$pagebreak1.hide();
+				}else{
+					$pagebreak2.hide();
+					$totalNumSpan.hide();
+					
+					if(low > 1){
+						$pagebreak1.show();
+						$btnFirst.show();
+					}else{
+						$pagebreak1.hide();
+						$btnFirst.hide();
+					}
+				}
+				
+				$pageLinks.html("");
+				for (var i = low; i <= high; i++){
+					if(i == cur){
+						$pageLinks.append($pageLink.clone().html(""+i).addClass("ui_pager_cur"));
+					}else{
+						$pageLinks.append($pageLink.clone().html(""+i));
+					}
+				}
+			}
+
+			init();
+		});
+	};//end init pager
+	
+	// onload
+	$(function(){
+		cecUI.initTab();
+		cecUI.initHover();
+		cecUI.initInputTip();
+		cecUI.initScroll();
+		cecUI.initPopupWindow();
+		cecUI.initPager();
+	});
+	
+})(jQuery);
+
+// jquery extend
+(function($){
+	var $window = $(window);
+	function _fixed($dom){
+		var t = $dom.data("t");
+		var l = $dom.data("l");
+		var b = $dom.data("b");
+		var r = $dom.data("r");
+		var top,left;
+		if(t != undefined) top = $window.scrollTop() + t + "px";
+		else if(b != undefined) top = $window.height()+$window.scrollTop()-$dom.height()-b+"px";
+		if(l != undefined) left = $window.scrollLeft() + l + "px";
+		else if(r != undefined) left = $window.width()+$window.scrollLeft()-$dom.width()-r+"px";
+		var p;
+		if(top && left) p = {"top":top,"left":left};
+		else if(top) p = {"top":top};
+		else if(left) p = {"left":left};
+		if (p) $dom.stop().animate(p,200);
+	};
+	
+	$.fn.extend({
+		fixed:function(reset){
+			//only for IE6
+			if ( $.browser.msie && ($.browser.version.slice(0,3) == "6.0" || document.compatMode=="BackCompat") ) {
+				this.each(function(){
+					var $this = $(this);
+					if (reset) {
+						var t = $this.css("top");
+						var l = $this.css("left");
+						var b = $this.css("bottom");
+						var r = $this.css("right");
+						if(!isNaN(parseInt(t))) $this.data("t",parseInt(t));
+						if(!isNaN(parseInt(l))) $this.data("l",parseInt(l));
+						if(!isNaN(parseInt(b))) $this.data("b",parseInt(b));
+						if(!isNaN(parseInt(r))) $this.data("r",parseInt(r));
+						_fixed($this);
+					} else {
+						_fixed($this);
+					}
+					if (!$this.data("winBind")) {
+						$this.data("winBind",true);
+						$window.scroll(function(){ _fixed($this); }).resize(function(){ _fixed($this); });
+					}
+				});
+			}
+		}
+	});
+	
+})(jQuery);
