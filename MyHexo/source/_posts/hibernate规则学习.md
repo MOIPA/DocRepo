@@ -1,7 +1,8 @@
 ---
 title: hibernate规则学习
 date: 2019-03-11 09:14:34
-tags: hibernate
+tags: Hibernate
+categories: Hibernate
 ---
 
 ### hibernate 规则
@@ -98,29 +99,29 @@ save方法其实是为了生成oid值 所以需要执行insert语句
 			```xml				
 				<!--指定session与线程绑定-->
 				<property name="hibernate.current_session_context_class">thread</property>
-			```
+```
 		**example**
 		service 开启事务，关闭和回滚
 		```java
 		
 			public void save(Customer customer) {
-
+	
 				//获得session   这时候customer没有id，不和session关联  瞬时状态
 				Session session = HibernateUtils.getCUrrentSession();
 				//执行事务
 				Transaction transaction = session.beginTransaction();
-
+	
 				try {
 					dao.save(customer);
 				} catch (Exception e) {
 					e.printStackTrace();
 					transaction.rollback();
 				}
-
+	
 				//提交事务
 				transaction.commit();
 				session.close(); //有id 无session 游离状态
-
+	
 			}
 		```
 		dao 执行事务
@@ -192,3 +193,4 @@ save方法其实是为了生成oid值 所以需要执行insert语句
 ```
 
 ​		
+```

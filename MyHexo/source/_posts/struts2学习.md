@@ -2,6 +2,7 @@
 title: struts2学习
 date: 2019-03-11 09:15:01
 tags: struts2
+categories: Struts2
 ---
 
 # Struts2 learn

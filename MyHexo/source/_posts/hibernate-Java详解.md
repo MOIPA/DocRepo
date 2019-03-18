@@ -1,10 +1,16 @@
 ---
 title: hibernate Java详解
 date: 2019-03-08 15:56:59
-tags: hibernate java
+tags: Hibernate
+descriptions: javaee工程中是如何使用Hibernate的
+categories: Hibernate
 ---
 
+
+
 ### 首先需要一个JavaBean在domain包下
+
+<!--more-->
 
 ```java
 package com.tr.domain;

@@ -3,6 +3,8 @@ layout: aria2
 title: aria2 配置
 date: 2019-03-07 12:21:49
 tags: aria2
+descriptions: aria2下载器，linux下使用，可以加速下载
+categories: linux
 ---
 
 # aria2 配置

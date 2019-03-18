@@ -2,6 +2,7 @@
 title: Hibernate配置
 date: 2019-03-07 12:03:24
 tags: Hibernate
+categories: Hibernate
 ---
 
 ### 使用maven+intellij配置基础环境

@@ -2,13 +2,14 @@
 title: maven 中 el不被解释
 date: 2019-03-08 16:32:22
 tags: el
+categories: maven
 ---
 
 ##### 原因：maven生成的web.xml版本太低
 
 ##### 解决方案： 在jsp前+`<%@ page isELIgnored="false" %>`
 
-
+<!--more-->
 
 更好的解决方案：将这部分2.3版本的换为2.4版本的即可
 

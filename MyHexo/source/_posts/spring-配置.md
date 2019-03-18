@@ -2,11 +2,14 @@
 title: spring 配置
 date: 2019-03-11 16:50:38
 tags: spring
+categories: Spring
 ---
 
-<!--more-->
+
 
 ### maven的pom.xml
+
+<!--more-->
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

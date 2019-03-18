@@ -2,7 +2,15 @@
 title: 常用包的maven依赖
 date: 2019-03-08 16:55:11
 tags: maven
+descriptions: maven依赖问题，这个文件描述了大部分java开发的常用依赖
+categories: maven
 ---
+
+
+
+转载其他人的 pom.xml
+
+<!--more-->
 
 ```xml
 <dependency>

@@ -3,10 +3,10 @@
 # ---------------------------------------------------------------
 
 # Put your favicon.ico into `hexo-site/source/` directory.
-favicon: /favicon.ico
+favicon: /images/favicon.ico
 
 # Set default keywords (Use a comma to separate)
-keywords: "Hexo, NexT"
+keywords: "hi, world"
 
 # Set rss to false to disable feed link.
 # Leave rss as empty to use site's feed link.
@@ -20,7 +20,7 @@ rss:
 authoricon: heart
 
 # Footer `powered-by` and `theme-info` copyright
-copyright: true
+copyright: false
 
 
 # ---------------------------------------------------------------
@@ -77,10 +77,10 @@ menu_icons:
 # ---------------------------------------------------------------
 
 # Schemes
-scheme: Muse
+#scheme: Muse
 #scheme: Mist
 #scheme: Pisces
-#scheme: Gemini
+scheme: Gemini
 
 
 # ---------------------------------------------------------------
@@ -316,7 +316,7 @@ han: false
 #swiftype_key:
 
 # Baidu Analytics ID
-#baidu_analytics:
+#baidu_analytics:41fc030db57d5570dd22f78997dc4a7e
 
 # Duoshuo ShortName
 #duoshuo_shortname:

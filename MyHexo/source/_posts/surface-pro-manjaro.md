@@ -2,6 +2,7 @@
 title: surface pro + manjaro
 date: 2019-03-07 12:24:33
 tags: [manjaro,surface]
+categories: linux
 ---
 
 ## Config Surface
@@ -64,27 +65,62 @@ push the voice-plus button and powerOn to get into UEFI
       export QT_IM_MODULE=fcitx
       export XMODIFIERS="@im=fcitx"
 
-1. #### JDK
+2. #### JDK
 
    1. sudo pacman -R jdk8-openjdk
    2. sudo pacman -R jre8-openjdk
    3. sudo pacman -R jre8-openjdk-headless
    4. yaourt jdk
 
-2. #### git
+3. #### git
 
    1. sudo pacman -S git
 
-3. #### oh my zsh : the official site[oh_my_zsh][https://github.com/robbyrussell/oh-my-zsh]
+4. #### oh my zsh : the official site[oh_my_zsh][https://github.com/robbyrussell/oh-my-zsh]
 
    1. yaourt -S zsh
    2. sh -c "$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
    3. vim ~/.zshrc
    4. source ~/.zshrc  :to enable the plugins
 
-4. #### tim
+   ##### 安装 powerline fonts
 
-5. #### vim configuration
+   ```
+   // 下载powerline fonts项目
+   git clone https://github.com/powerline/fonts
+   // 执行安装
+   ./fonts/install.sh
+   ```
+
+   ##### 配置iTerm
+
+   在`Preperence → Profiles → Text → Front` 中，
+   和`Preperence → Profiles → Text → Non-ASCII Font`中
+   改变字体为`Sauce Code Powerline`
+
+   **安装powerline**（参考<https://github.com/banga/powerline-shell>）
+
+   > git clone https://github.com/milkbikis/powerline-shell
+   >
+   > cd powerline-shell
+   >
+   > ./install.py
+
+   **３****, 使用zsh替换bash**（重启系统后生效）
+
+   > chsh -s /bin/zsh
+
+   **４****, 配置zsh**
+
+   更换powerline主题：
+
+   到git克隆的powerline-shell目录下，修改config.py中的theme的设置，然后运行install.py
+
+   参考<http://www.cnblogs.com/ma6174/archive/2012/05/08/2490921.html>
+
+5. #### tim
+
+6. #### vim configuration
 
    1. GlobalSettings:/etc/vim/vimrc    or  /etc/vimrc
    2. persional settings : ~/.vimrc

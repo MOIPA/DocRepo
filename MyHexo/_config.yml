@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: TRBlog
+title: TrBlog
 subtitle:
-description:
+description: talk is cheap , show me the code.
 keywords:
-author: 唐锐
+author: tr
 language:
 timezone:
 
@@ -74,8 +74,8 @@ avatar: /images/tr.jpg
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: yilia
-#theme: next
+#theme: yilia
+theme: next
 
 #Admin  url/admin
 #admin:
