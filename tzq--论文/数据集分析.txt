@@ -1,0 +1,52 @@
+1.导入数据集  数据集7210_1.csv 
+	
+2.数据集字段说明：
+		sid 数据库自增
+		id
+		asins
+		brand：品牌
+		categories：类别
+		colors：颜色
+		count：计数
+		dateAdded：添加日期
+		dateUpdated：更新日期
+		descriptions：说明
+		dimension：尺寸
+		ean：通用条形码
+		features：特征
+		imageURLs：图像URL
+		keys: 主键
+		manufacturer：供应商
+		manufacturerNumber：供应商编号
+		merchants ：销售渠道
+		name：描述
+		prices_amountMin：最低价格
+		prices_amountMax：最高价格
+		prices_condition：状态
+		prices_currency：货币
+		prices_isSale：是否销售
+		prices_merchant 销售渠道
+
+
+商品是否被消费者购买
+SELECT prices_isSale,CONCAT(ROUND(COUNT(prices_isSale)/(SELECT COUNT(prices_isSale) FROM DataSet)*100,2),'%') AS '占比'
+FROM DataSet
+GROUP BY prices_isSale;
+
+统计数据中仅有20%商品售出，接下来进一步分析售出的鞋子属于什么品牌
+SELECT brand,COUNT(brand) AS '计数'
+FROM DataSet
+WHERE issale='y'
+GROUP BY brand
+ORDER BY COUNT(brand) DESC;
+
+
+
+
+一、提出问题
+
+商品是否被消费者购买？
+每个不同品牌的平均价格是多少？
+哪些品牌的价格最高？
+哪些价格分布最广？
+各类网站对于女鞋销售占比
