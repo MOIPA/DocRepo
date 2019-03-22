@@ -29,14 +29,14 @@
 
 
 商品是否被消费者购买
-SELECT prices_isSale,CONCAT(ROUND(COUNT(prices_isSale)/(SELECT COUNT(prices_isSale) FROM DataSet)*100,2),'%') AS '占比'
+SELECT prices_is_sale,CONCAT(ROUND(COUNT(prices_is_sale)/(SELECT COUNT(prices_is_sale) FROM DataSet)*100,2),'%') AS '占比'
 FROM DataSet
-GROUP BY prices_isSale;
+GROUP BY prices_is_sale;
 
 统计数据中仅有20%商品售出，接下来进一步分析售出的鞋子属于什么品牌
 SELECT brand,COUNT(brand) AS '计数'
 FROM DataSet
-WHERE prices_isSale='TRUE'
+WHERE prices_is_sale='TRUE'
 GROUP BY brand
 ORDER BY COUNT(brand) DESC;
 
@@ -52,11 +52,11 @@ LIMIT 200;
 哪些品牌的价格最高？
 假设超过1000元为高价格品牌
 
-SELECT brand,prices_amountMax
+SELECT brand,prices_amount_max
 FROM DataSet
-WHERE prices_amountMax>=1000
+WHERE prices_amount_max>=1000
 GROUP BY brand
-ORDER BY prices_amountMax DESC;
+ORDER BY prices_amount_max DESC;
 
 哪些价格分布最广？
 通过大致浏览价格水平，大致确认价格区间，代码如下
