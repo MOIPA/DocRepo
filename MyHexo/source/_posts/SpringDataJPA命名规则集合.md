@@ -1,8 +1,11 @@
----
 title: SpringDataJPA命名规则集合
-date: 2019-03-15 14:12:54
-tags: spring
-categories: Spring
+tags:
+  - spring
+categories:
+  - SpringDataJPA
+  - ''
+author: tr
+date: 2019-03-15 14:12:00
 ---
 
 常用的命名规则

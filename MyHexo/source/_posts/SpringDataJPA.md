@@ -1,10 +1,11 @@
----
 title: SpringDataJPA
-date: 2019-03-15 09:38:14
-tags: SpringDataJPA
-categories: Spring
+tags:
+  - SpringDataJPA
+categories:
+  - SpringDataJPA
+author: tr
+date: 2019-03-15 09:38:00
 ---
-
 ### 简介 
 
 1. springdata下的一个项目 提供了一套JPA标准的数据库操作方案，底层还是HibernateJPA
@@ -12,6 +13,8 @@ categories: Spring
 2. 我们只需要定义接口然后继承SpringDataJpa中的接口即可，不用写实现类，意思dao不需要实现
 
 <!--more-->
+
+![](/images/SpringJPA继承图0.png)
 
 ### startUp
 
@@ -555,5 +558,3 @@ public class testUsersDao {
     
 
 #### PagingAndSortingRepository接口
-
- 

@@ -1,8 +1,10 @@
----
 title: docker配置jenkins
-date: 2019-03-22 17:46:36
-tags: docker
+tags:
+  - docker
 descriptions: docker配置 启动jenkins 常见docker命令
+categories:
+  - docker
+date: 2019-03-22 17:46:00
 ---
 
 ### docker是啥

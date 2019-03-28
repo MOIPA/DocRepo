@@ -74,19 +74,19 @@ ELSE '500以上' END);
 通过价格数量的比较，女鞋的价格大部分集中在0-250元之间，我们在对250元以下的女鞋再进行细分
 
 SELECT (CASE
-WHEN prices_amountMax >0 AND prices_amountMax<= 50 THEN '0~50' 
-WHEN prices_amountMax >50 AND prices_amountMax<= 100 THEN '50~100' 
-WHEN prices_amountMax >100 AND prices_amountMax<= 150 THEN '100~150'
-WHEN prices_amountMax >150 AND prices_amountMax<= 200 THEN '150~200'
-WHEN prices_amountMax >200 AND prices_amountMax<= 250 THEN '200~250'
+WHEN prices_amount_max >0 AND prices_amount_max<= 50 THEN '0~50' 
+WHEN prices_amount_max >50 AND prices_amount_max<= 100 THEN '50~100' 
+WHEN prices_amount_max >100 AND prices_amount_max<= 150 THEN '100~150'
+WHEN prices_amount_max >150 AND prices_amount_max<= 200 THEN '150~200'
+WHEN prices_amount_max >200 AND prices_amount_max<= 250 THEN '200~250'
 ELSE '250以上' END) AS '价格范围',
 COUNT(*) AS '数量' FROM DataSet
 GROUP BY (CASE
-WHEN prices_amountMax >0 AND prices_amountMax<= 50 THEN '0~50'
-WHEN prices_amountMax >50 AND prices_amountMax<= 100 THEN '50~100'
-WHEN prices_amountMax >100 AND prices_amountMax<= 150 THEN '100~150'
-WHEN prices_amountMax >150 AND prices_amountMax<= 200 THEN '150~200'
-WHEN prices_amountMax >200 AND prices_amountMax<= 250 THEN '200~250'
+WHEN prices_amount_max >0 AND prices_amount_max<= 50 THEN '0~50'
+WHEN prices_amount_max >50 AND prices_amount_max<= 100 THEN '50~100'
+WHEN prices_amount_max >100 AND prices_amount_max<= 150 THEN '100~150'
+WHEN prices_amount_max >150 AND prices_amount_max<= 200 THEN '150~200'
+WHEN prices_amount_max >200 AND prices_amount_max<= 250 THEN '200~250'
 ELSE '250以上'  END);
 
 各类网站对于女鞋销售占比
