@@ -10,6 +10,8 @@ date: 2019-03-29 08:46:00
 
 1. 什么是eureka：服务注册和发现组件
 
+<!--more-->
+
 #### 配置Eureka-server
 
 1. 创建maven主工程且pom.xml如下
@@ -161,4 +163,115 @@ server:
 #### Eureka 概念
 
 1. EurekaClient实际上分为：ApplicationService，ApplicationClient
+2. server通过在配置文件指向其他节点的defaultZone可以将对方视为伙伴节点，之后会同步节点之间的注册过了的服务
+
+#### Eureka 继承在一个maven工程
+
+1. client和server的配置大致相似，也和上面的差不多，下面是client的pom
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.eureka</groupId>
+        <artifactId>tr</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../</relativePath> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.eureka</groupId>
+    <artifactId>eureka-client</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>eureka-client</name>
+    <description>Demo project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <version>1.4.6.RELEASE</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+
+```
+
+2. 给出主模块的pom
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.eureka</groupId>
+    <artifactId>tr</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.3.RELEASE</version>
+        <relativePath></relativePath>
+    </parent>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>eureka-server</module>
+        <module>eureka-client</module>
+    </modules>
+
+</project>
+```
+
+#### 运行示例
+
+1. 我在示例中写了两个模块，每个模块生成了一个jar包，在server的模块的jar包目录处使用：
+
+	java -jar eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer2
+
+	java -jar eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer2
+
+	这样通过使用这个命令，选择了对应的profile，启动了两个端口不同互相为同伴节点的server
    
+2. 这时候启动client，client向server：peer1注册，但是peer2很快也会同步
+
+3. localhost:8761 查看结果
