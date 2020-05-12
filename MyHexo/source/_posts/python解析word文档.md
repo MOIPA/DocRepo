@@ -1,9 +1,11 @@
 title: python解析word文档
 author: tr
 tags:
-  - python
+  - Python
+  - ''
 categories:
-  - python
+  - Python
+  - ''
 date: 2019-04-15 17:19:00
 ---
 ### 今天公司新需求，解析word习题集

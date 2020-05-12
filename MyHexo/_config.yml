@@ -87,6 +87,8 @@ admin:
   username: tr
   password_hash: $2a$10$EzXtiahRLim1dS5uxmsKMe/KQD3pWrJPcIWOtv.1ofdvTQ6UfsPgK
   secret: 0800
+  deployCommand: './hexo-deploy.sh' 
+
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html

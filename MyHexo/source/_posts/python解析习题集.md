@@ -1,8 +1,9 @@
 title: python解析习题集
 author: tr
 tags:
-  - python
-categories: []
+  - Python
+categories:
+  - Python
 date: 2019-04-11 09:52:00
 ---
 ### 使用python解析txt题目文本
@@ -14,269 +15,546 @@ date: 2019-04-11 09:52:00
  ```python
  
  # -*- coding: utf-8 -*-
-import re
-import sys
-import os,glob
 import json
+import os
+import re
 import shutil
+import sys
+import xml.etree.cElementTree as ET
+import docx
+import requests
+from post_question import uploadFileViaSDK
+from extract_word_pic import word2pic
+from format_json import formatJson
 
-class Option:
+#reload(sys)
+#sys.setdefaultencoding('utf8')
+#TODO 优化图片，优化tag寻图算法（不同word版本导致的tag变动问题）
 
-	def __init__(self,options):
-		self.options=options
-	def display(self):
-		print self.options
+SINGLE_CHOICE = 'single_choice_question'
+FILL_IN = 'fill_in_question'
+ANSWER_QUESTION = 'answer_question'
+OBJECTIVE_QUESTION = 'objective_question'
+
+QUESTION_BANK_ID=153
+QUESTION_ADD_URL='http://192.168.0.100:8882/api/v1/questions/add'
+X_USERID='72'
+X_ORGANIZATION_ID = '21'
+
+UPLOAD_OSS = False
+PUSH_DATA = False
+
+def parseRidByRel(rid):
+   root = ET.ElementTree(file='./word_pic_save/document.xml.rels')
+   for ele in root.iter():
+      if ele.tag == "{http://schemas.openxmlformats.org/package/2006/relationships}Relationship":
+         if ele.get('Id') == rid:
+            return re.sub('media/','',ele.get('Target'))
+   return "Null"
+
+def parseLinePic(line):
+   root = ET.fromstring(line.paragraph_format.element.xml)
+   outStr = ''
+   for ele in root.iter():
+      # print(ele.tag)
+      # continue
+      if(ele.tag=="{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t"):
+         outStr += ele.text
+      if(ele.tag == "{urn:schemas-microsoft-com:vml}imagedata"):
+         rid = ele.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+         if UPLOAD_OSS:
+             outStr += uploadOSS(re.sub('wmf','png',parseRidByRel(rid)))
+         else:
+             outStr += "<word-pic>"+re.sub('wmf','png',parseRidByRel(rid))+"</word-pic>"
+   return outStr
+
+def pushData(json_data, url):
+    headers = {'content-type': 'application/json', 'X-UserId': X_USERID}
+    response = requests.post(url, json=json.loads(json_data), headers=headers)
+    if response.status_code == requests.codes.ok:
+        print 'insert succeed '+response.text
+    else:
+        print 'failed'+str(response.status_code)
+
+
+def uploadOSS(imageFile):
+        # print picID+" is the id"
+        rootURL = 'https://miscrofile.oss-cn-hangzhou.aliyuncs.com/'
+        targetFold = 'root/question/computer_science/'
+        targetFile = imageFile 
+        try:
+            uploadFileViaSDK('./word_pic_save/'+targetFile, targetFold)
+        except:
+            print str(picID)+' pic upload failed'
+        return '<img src=\'' + rootURL+targetFold+targetFile+'\'/>'
+
+
+# parse the line's pic,upload this picture and return the replaced line
+def uploadOSSOld(picID):
+        # print picID+" is the id"
+        rootURL = 'https://miscrofile.oss-cn-hangzhou.aliyuncs.com/'
+        targetFold = 'root/question/computer_science/'
+        targetFile = 'image'+str(picID)+'.png'
+        if UPLOAD_OSS == False:
+            #return '<word-pic>' +targetFile+'<word-pic/>'
+            return targetFile
+        try:
+            uploadFileViaSDK('./word_pic_save/'+targetFile, targetFold)
+        except:
+            print str(picID)+' pic upload failed'
+        return '<img src=\'' + rootURL+targetFold+targetFile+'\'/>'
+
+def parsePic(line, counter):
+    # indentify pic
+    root = ET.fromstring(line.paragraph_format.element.xml)
+    for ele in root.iter():
+        if(ele.tag == '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pict'):
+            counter[0] += 1
+            return uploadOSS(counter[0])+'\n'
+
 
 class Question:
+    type = ''
+    options = ''
+    stem = ''
+    answer = ''
+    id = ''
+    analysis = ''
+    point = ''
+    short_question_answer = ''
 
-	def __init__(self, qid, item, options, answer, point, analysis):	
-		self.qid=qid
-		self.item=item
-		self.option=Option(options)
-		self.answer=answer
-		self.point=point
-		self.analysis=analysis
+    # format options
+    def formatOptions(self):
+        checkedOptions = []
+        if self.options != '' and self.type == SINGLE_CHOICE and len(self.options) > 0:
+            # print "****options***"+json.dumps(question, default=lambda o: o.__dict__,sort_keys=True, indent=4,ensure_ascii=False)
+            #	seq =  re.match(r'^([A|B|C|D|a|b|c|d])[\.|•]?\s*(.*)',question.option[0].strip())
+            #	dot =  re.match(r'^([A|B|C|D|a|b|c|d])[\.|•]\s*(.*)',question.option[0].strip())
+            for op in self.options:
+                # able to judge
+                seq = re.match(
+                    r'^([A|B|C|D|a|b|c|d])[\.|•]?\s*(.*)', op.strip())
+                dot = re.match(
+                    r'^([A|B|C|D|a|b|c|d])[\.|•]\s*(.*)', op.strip())
+                if seq:
+                    # sequence shuould be the same type
+                    if seq.group(1) == 'A' or seq.group(1) == 'B' or seq.group(1) == 'C' or seq.group(1) == 'D':
+                        srchType = "UPPERCASE"
+                    if seq.group(1) == 'a' or seq.group(1) == 'b' or seq.group(1) == 'c' or seq.group(1) == 'd':
+                        srchType = "LOWERCASE"
+                    # proceed with seqType and dot
+                    # a b c d
+                    if seq.group(1) == 'A' or seq.group(1) == 'a':
+                        if srchType == 'UPPERCASE' and dot:
+                            rest1 = re.match(
+                                r'(.*)B[\.|•]\s*(.*)', seq.group(2))
+                        elif srchType == 'UPPERCASE' and dot == None:
+                            rest1 = re.match(
+                                r'(.*)B[\.|•]?\s*(.*)', seq.group(2))
+                        elif srchType == 'LOWERCASE' and dot:
+                            rest1 = re.match(
+                                r'(.*)b[\.|•]\s*(.*)', seq.group(2))
+                        elif srchType == 'LOWERCASE' and dot == None:
+                            rest1 = re.match(
+                                r'(.*)b[\.|•]?\s*(.*)', seq.group(2))
+                        # B options exists
+                        if rest1:
+                            checkedOptions.append('A.' + rest1.group(1))
 
-	def display(self):
-		print str(self.qid)+":"+str(self.item)+str(self.answer)+str(self.point)+str(self.analysis)
-		self.option.display()
+                            if srchType == 'UPPERCASE' and dot:
+                                rest2 = re.match(
+                                    r'(.*)C[\.|•]\s*(.*)', rest1.group(2))
+                            elif srchType == 'UPPERCASE' and dot == None:
+                                rest2 = re.match(
+                                    r'(.*)C[\.|•]?\s*(.*)', rest1.group(2))
+                            elif srchType == 'LOWERCASE' and dot:
+                                rest2 = re.match(
+                                    r'(.*)c[\.|•]\s*(.*)', rest1.group(2))
+                            elif srchType == 'LOWERCASE' and dot == None:
+                                rest2 = re.match(
+                                    r'(.*)c[\.|•]?\s*(.*)', rest1.group(2))
 
-# execute the parse program, transfer topic into question object,then put add it to the list
-def parseQuestionFile(questionFileName,questionArray):
-	# flag ,used to distinguish the parsing statment 0:means parsing options 1:means parsing topic
-	flag=-1
-	tempString="";
-	fout = open('all_single_choice_quesion','a+')
-	fs = open(questionFileName,'r+')
-	# initialization
-	options=[]
-	for line in fs.readlines():
-		# remove chinese "quanjiao"
-		line = line.replace('\xa1\xa1', '')
+                            # C options exists
+                            if rest2:
+                                checkedOptions.append(
+                                    'B.' + rest2.group(1))
 
-		# match empth line
-		if re.match(r'^\s*$', line):
-			continue
+                                if srchType == 'UPPERCASE' and dot:
+                                    rest3 = re.match(
+                                        r'(.*)D[\.|•]\s*(.*)', rest2.group(2))
+                                elif srchType == 'UPPERCASE' and dot == None:
+                                    rest3 = re.match(
+                                        r'(.*)D[\.|•]?\s*(.*)', rest2.group(2))
+                                elif srchType == 'LOWERCASE' and dot:
+                                    rest3 = re.match(
+                                        r'(.*)d[\.|•]\s*(.*)', rest2.group(2))
+                                elif srchType == 'LOWERCASE' and dot == None:
+                                    rest3 = re.match(
+                                        r'(.*)d[\.|•]?\s*(.*)', rest2.group(2))
 
-		# match item such as text begining with 1.or 12 .etc
-		m = re.search(r'\s*[0-9]+\.\s*(.*)$', line)
-		# Match is it is an option
-		m_op =  re.search(r'\s*[A|B|C|D]+\.\s*(.*)$', line)
-		if m or m_op==None:
-			if m:
-				if flag==0:
-					#db
-					# encountered another topic time to finish this question filling
-					question.option=options
-					questionArray.append(question)
-					options=[]
-					tempString=""
-				# get question id
-				qid = re.search(r'\s*([0-9]*)\.\s*(.*)$', line).group(1)
-				question=Question(qid,'def','','def','def','def')
-				# reset to 1 starting filling topic
-				flag=1
-				#fout.write(qid+': item:\n'+m.group(1))
-				tempString+='item:\n'+m.group(1)
-			if m_op==None and flag==1:
-				fout.write(line)
-				tempString+=line
-		else:
-			# match options
-			if flag==1:
-				# db
-				fout.write('\nOptions:\n')
-				question.item=tempString
-				tempString=""
-				flag=0
-			res = re.split(r'\s*[A|B|C|D]\s*\.\s*', line.strip())
+                                # rest3 = re.match(r'(.*)[D|d][\.|•]?\s*(.*)',rest2.group(2))
+                                # D options exists
+                                if rest3:
+                                    checkedOptions.append(
+                                        'C.' + rest3.group(1))
+                                    checkedOptions.append(
+                                        'D.' + rest3.group(2))
+                                else:
+                                    checkedOptions.append(
+                                        'C.' + rest2.group(2))
+                            else:
+                                checkedOptions.append(
+                                    'B.' + rest1.group(2))
 
-			for elem in res:
-				if elem:
-				#	print "\nelem****"+elem+"***elem\n"
-					options.append(elem)
-					fout.write('\t' + elem + '\n')
-	# end finish appending
-	question.options=options
-	questionArray.append(question)
-	fout.write('\n')
-	fout.close()
+                        else:
+                            checkedOptions.append('A.' + seq.group(2))
+                    # b c d
+                    elif seq.group(1) == 'B' or seq.group(1) == 'b':
+                        if srchType == 'UPPERCASE' and dot:
+                            rest1 = re.match(
+                                r'(.*)C[\.|•]\s*(.*)', seq.group(2))
+                        elif srchType == 'UPPERCASE' and dot == None:
+                            rest1 = re.match(
+                                r'(.*)C[\.|•]?\s*(.*)', seq.group(2))
+                        elif srchType == 'LOWERCASE' and dot:
+                            rest1 = re.match(
+                                r'(.*)c[\.|•]\s*(.*)', seq.group(2))
+                        elif srchType == 'LOWERCASE' and dot == None:
+                            rest1 = re.match(
+                                r'(.*)c[\.|•]?\s*(.*)', seq.group(2))
+                        # rest1 = re.match(r'(.*)[C|c][\.|•]?\s*(.*)',seq.group(2))
+                        # C options exists
+                        if rest1:
+                            checkedOptions.append('B.' + rest1.group(1))
+                            if srchType == 'UPPERCASE' and dot:
+                                rest2 = re.match(
+                                    r'(.*)D[\.|•]\s*(.*)', rest1.group(2))
+                            elif srchType == 'UPPERCASE' and dot == None:
+                                rest2 = re.match(
+                                    r'(.*)D[\.|•]?\s*(.*)', rest1.group(2))
+                            elif srchType == 'LOWERCASE' and dot:
+                                rest2 = re.match(
+                                    r'(.*)d[\.|•]\s*(.*)', rest1.group(2))
+                            elif srchType == 'LOWERCASE' and dot == None:
+                                rest2 = re.match(
+                                    r'(.*)d[\.|•]?\s*(.*)', rest1.group(2))
+                            #	rest2 = re.match(r'(.*)[D|d][\.|•]?\s*(.*)',rest1.group(2))
+                            # D options exists
+                            if rest2:
+                                checkedOptions.append(
+                                    'C.' + rest2.group(1))
+                                checkedOptions.append(
+                                    'D.' + rest2.group(2))
+                            else:
+                                checkedOptions.append(
+                                    'C.' + rest1.group(2))
 
-# used to merge data to tpoic
-def appendAnswer2Topic(questionArray,qid,answer,point,analysis):
-	i=0
-	while i<len(questionArray):
-		if questionArray[i].qid==qid:
-			questionArray[i].answer=answer
-			questionArray[i].point=point
-			questionArray[i].analysis=analysis
-		i+=1
+                        else:
+                            checkedOptions.append('B.' + seq.group(2))
+                    # c d
+                    elif seq.group(1) == 'C' or seq.group(1) == 'c':
+                        if srchType == 'UPPERCASE' and dot:
+                            rest1 = re.match(
+                                r'(.*)D[\.|•]\s*(.*)', seq.group(2))
+                        elif srchType == 'UPPERCASE' and dot == None:
+                            rest1 = re.match(
+                                r'(.*)D[\.|•]?\s*(.*)', seq.group(2))
+                        elif srchType == 'LOWERCASE' and dot:
+                            rest1 = re.match(
+                                r'(.*)d[\.|•]\s*(.*)', seq.group(2))
+                        elif srchType == 'LOWERCASE' and dot == None:
+                            rest1 = re.match(
+                                r'(.*)d[\.|•]?\s*(.*)', seq.group(2))
+                        # rest1 = re.match(r'(.*)[D|d][\.|•]?\s*(.*)',seq.group(2))
+                        # D options exists
+                        if rest1:
+                            checkedOptions.append('C.' + rest1.group(1))
+                            checkedOptions.append('D.' + rest1.group(2))
+                        else:
+                            checkedOptions.append('C.' + seq.group(2))
+                    # d
+                    elif seq.group(1) == 'D' or seq.group(1) == 'd':
+                        checkedOptions.append('D.' + seq.group(2))
 
-# parse answer,the problem is answer and point have only one line except analysis which may occupy many lines,but still give all of them status flag for the further change
-def parseAnswerFile(answerFileName,questionArray):
-	fs = open(answerFileName,'r+')
-
-	# status to identify the operation status,-1 no, 1 answer, 2 point, 3 analysis , 4 nomal
-	status=-1;
-
-	for line in fs.readlines():
-		# remove chinese "quanjiao"
-		line = line.replace('\xa1\xa1', '')
-	
-		# match empth line
-		if re.match(r'^\s*$', line):
-			continue
-		
-		# match answer id line
-		aidm = re.match(r'\s*([0-9]*)[\.|•]',line)
-		# match answer 	
-		answerm = re.match(r'\s*[0-9]*\.【答案】([a-zA-Z]?)',line)
-		# match point 
-		pointm = re.match(r'\s*【考点】(.*)',line)	
-		# match analysis
-		analysism = re.match(r'\s*【解析】(.*)',line)	
-	
-		# judge status
-		if aidm:
-			# encounter the start, handle result if it is exist
-			if status != -1:
-				# append operation
-				appendAnswer2Topic(questionArray,aid,answer,point,analysis)
-				fout = open('all_single_choice_answer','a+')
-				fout.write(aid)
-				fout.write('\n'+answer)
-				fout.write('\n'+point)
-				fout.write('\n'+analysis+'\n')
-				fout.close()
-			aid=aidm.group(1)
-			if answerm:
-				answer = '[answer]'+answerm.group(1)
-			status=1
-		elif pointm:
-			point='[point]'+pointm.group(1)
-			status=2
-		elif analysism:
-			analysis='[analysis]'+analysism.group(1)
-			status=3
-		else :
-			if status==3:
-				analysis+=line
-			if status!=-1:
-				status=4
-	# end finish appending
-	appendAnswer2Topic(questionArray,aid,answer,point,analysis)
-			
-	
-# parse topic and answer operation
-def parseTopicAndAnswer(questionFileName, answerFileName, outFileName):
-	# define data
-	questionArray = []
-	# start parse
-	parseQuestionFile(questionFileName, questionArray)
-	parseAnswerFile(answerFileName, questionArray)
-	#show(questionArray)
-	#fout=open(outFileName,'a')
-	convert(questionArray)
-
-# show result
-def show(questionArray):
-	for ques in questionArray:
-	 	ques.display()
-	 	for opt in ques.options:
-	 		print opt
-	 	print '\nquestion is over\n'
-	
-# convert to json
-def convert(questionArray):
-	fout=open('out_json','a+')	
-	for ques in questionArray:
-	 #	for opt in ques.options:
-			#opt=opt[1:]
-		#	print opt
-		fout.write(json.dumps(ques, default=lambda o: o.__dict__,sort_keys=True, indent=4,ensure_ascii=False))
-	fout.close()
-	
-
-# parse all full book into several files(single choice question)
-def parseBookSingleQuestion(path,bookName):
-
-	# define question and answer file name array
-	questionFileNameArray=[]
-	answerFileNameArray=[]
-
-	fs=open(bookName,'r+')
-	bm=re.match(r'\s*(.*)\..*','computer_science.txt').group(1)
-	# delete directory
-	if os.path.exists(bm+'_single_choice')==True:
-		shutil.rmtree(bm+'_single_choice')
-	print 'create directory'
-	os.mkdir(bm+'_single_choice')
-	os.chdir(bm+'_single_choice')
-	# status to indetify parsing status, 0 enter in chapter ,1 enter chapter single choice question , 2 enter in chapter fill question , 3 enter in answer single choice, 4 enter in answer single fill
-	writeStatus=-1
-	# if it is paring into answer section
-	answerStatus=-1
-	i=1
-	for line in fs.readlines():
-		# remove chinese "quanjiao"
-		line = line.replace('\xa1\xa1', '')
-	
-		# match empth line
-		if re.match(r'^\s*$', line):
-			continue
-		# match chapter
-		chapterIdm=re.match(r'\s*第(.*)章\s*',line)
-		scqm=re.match(r'\s*单项选择题\s*',line)
-		fqm=re.match(r'\s*填空题\s*',line)
-		anm=re.match(r'\s*参考答案与解析\s*',line)
-		
-		# status judge
-		if chapterIdm:
-			answerStatus=0
-			chapterId=chapterIdm.group(1)
-		if scqm:
-			writeStatus=1;
-			if answerStatus!=1:
-				fout=open('single_choice_question_'+chapterId+'.data','w')
-				questionFileNameArray.append('single_choice_question_'+chapterId+'.data')
-				
-			elif answerStatus==1:
-				fout=open('single_choice_answer_'+chapterId+'.data','w')
-				answerFileNameArray.append('single_choice_answer_'+chapterId+'.data')
-
-		# enter in fill question means the single question part is over
-		if fqm:
-			writeStatus=-1
-			answerStatus=-1
-			fout.write('\n')
-			fout.close() 
-		if anm:
-			answerStatus=1
-		# normal line write
-		if writeStatus==1:
-			fout.write(line)
-		
-	return (questionFileNameArray,answerFileNameArray)
-
-# main first parse into several files  then ..
-def mainParse():
-	# path
-	path = './'
-	os.chdir(path)
-	# declare the file 
-	outFile='out.txt'
-	bookName='computer_science.txt'
-
-	
-	# start parse 
-	# parseBook into several files and get these filenames
-	qfna,afna=parseBookSingleQuestion(path,bookName)
-	while qfna:
-		parseTopicAndAnswer(qfna.pop(),afna.pop(),outFile)
+            self.options = checkedOptions
+            if len(checkedOptions) != 4:
+                self.id = -1
 
 
-mainParse()
+    def formatQuestion(self):
+        return formatJson(json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4, ensure_ascii=False),QUESTION_BANK_ID,SINGLE_CHOICE,FILL_IN,ANSWER_QUESTION,OBJECTIVE_QUESTION)
+        #print json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4, ensure_ascii=False)
+
+
+class Chapter:
+    chapterText = ''
+
+    questionArray = []
+
+    def __init__(self, chapterText):
+        self.chapterText = chapterText
+
+    def parseQuestion(self, singleChoiceText, questionType):
+        questionArray = []
+        flag = 'unstart'
+        tempString = ''
+        options = []
+        results = singleChoiceText.split('\n')
+        for line in results:
+            # remove chinese "quanjiao"
+            line = line.replace('\xa1\xa1', '')
+            # match empth line
+            if re.match(r'^\s*$', line):
+                continue
+
+            # match item such as text begining with 1.or 12 .etc
+            m = re.search(r'^[0-9]+[\.|•]\s*(.*)$', line.strip())
+            # Match if it is an option
+            m_op = re.search(r'^[A|B|C|D|a|b|c|d]\s*(.*)$', line.strip())
+            if m != None or m_op == None:
+                if m:
+                    #if flag == 'option' or flag == 'stem':
+                    if flag == 'option' or (questionType != SINGLE_CHOICE and flag=='stem'):
+                        if flag == 'stem':
+                            question.stem = re.sub(
+                                '^[0-9]*\.?', '', tempString)
+                        # save the last option
+                        question.options = options
+                        questionArray.append(question)
+                        options = []
+                        tempString = ""
+                    # get question id
+                    qid = re.search(
+                        r'\s*([0-9]*)[\.|•]\s*(.*)$', line).group(1)
+                    question = Question()
+                    question.id = qid
+                    question.type = questionType
+                    # reset to 1 starting filling topic
+                    flag = 'stem'
+
+                if m_op == None and flag == 'stem':
+                    tempString += line
+
+            else:
+                # fill question topic
+                if flag == 'stem':
+                    question.stem = re.sub('^[0-9]*\.?', '', tempString)
+                    tempString = ""
+                    flag = 'option'
+                res = re.split(
+                    r'\s*[A|B|C|D|a|b|c|d]\s*\.{3}\s*\s*', line.strip())
+
+                # match options
+                for elem in res:
+                    if elem:
+                        options.append(elem)
+        # end finish appending
+        question.options = options
+        questionArray.append(question)
+        if question.stem == '':
+            question.stem = re.sub('^[0-9]*\.?', '', tempString)
+
+        return questionArray
+
+    # used to merge data to topic
+    def appendAnswer2Topic(self, questionArray, id, answer, point, analysis, short_question_answer):
+        for elem in (question for question in questionArray if question.id == id):
+            elem.short_question_answer = short_question_answer
+            elem.answer = answer
+            elem.point = point
+            elem.analysis = analysis
+
+    # append answer
+    def appendAnswer(self, answerText):
+        #print answerText
+         # status to identify the operation status,-1 no, 1 answer, 2 point, 3 analysis , 4 nomal
+        status = -1
+        result = answerText.split('\n')
+        answer_question_answer = ''
+        for line in result:
+            # remove chinese "quanjiao"
+            line = line.replace('\xa1\xa1', '')
+
+            # match empth line
+            if re.match(r'^\s*$', line):
+                continue
+            # match answer id line
+            aidm = re.match(r'\s*([0-9]*)[\.|•]', line)
+            # print '** aidm is:'+str(aidm)
+            # match answer
+            answerm = re.match(r'\s*[0-9]*\s*\.?\s*【答案】(.*)', line)
+            # match point
+            pointm = re.match(r'\s*【考点】(.*)', line)
+            # match analysis
+            analysism = re.match(r'\s*【解析】(.*)', line)
+            # match answer of answer-question
+            answer_question_answerm = re.match(r'\s*【参考答案】(.*)', line)
+
+
+            # judge status
+            if aidm:
+                # encounter init part, handle result if it exists
+                if status != -1:
+                    # append operation
+                    self.appendAnswer2Topic(self.questionArray,
+                                            aid, answer, point, analysis, answer_question_answer)
+
+                aid = aidm.group(1)
+                
+            if answer_question_answerm:
+                answer_question_answer = '[answer_question_answer]' + answer_question_answerm.group(1)
+                status = 4    
+            elif answerm:
+                answer = '[answer]' + answerm.group(1)
+                status = 1
+            elif pointm:
+                point = '[point]' + pointm.group(1)
+                status = 2
+            elif analysism:
+                analysis = '[analysis]' + analysism.group(1)
+                status = 3
+            else:
+                if status == 3:
+                    analysis += line
+                if status == 2:
+                    point += line
+                if status == 4:
+                    answer_question_answer += line
+                if status == 1:
+                    answer += line
+                # if status != -1:
+                #    status = 4
+        # end finish appending
+        self.appendAnswer2Topic(self.questionArray, aid,
+                                answer, point, analysis,answer_question_answer)
+
+    def devideAnswerAndQuestion(self, chapterText):
+        #print '*****************'
+        #print chapterText
+        result = re.split(r'\s*参考答案与解析\s*', chapterText)
+        return (result[0], result[1])
+
+    def parseDiffQuestion(self, questionText):
+         # define question array
+        singleQuestionText = ''
+        fillQuestionText = ''
+        answerQuestionText = ''
+        objectiveQuestionText = ''
+
+        questions = re.split(r'(单项选择题|填空题|简答题|综合应用题)', questionText)
+        for i in range(len(questions)):
+            if re.match(r'单项选择题', questions[i]) and re.match(r'.*[单项选择题,填空题,简答题,综合应用题]', questions[i+1]) == None:
+                singleQuestionText = questions[i+1]
+            if re.match(r'填空题', questions[i]) and re.match(r'.*[单项选择题,填空题,简答题,综合应用题]', questions[i+1]) == None:
+                fillQuestionText = questions[i+1]
+            if re.match(r'简答题', questions[i]) and re.match(r'.*[单项选择题,填空题,简答题,综合应用题]', questions[i+1]) == None:
+                answerQuestionText = questions[i+1]
+            if re.match(r'综合应用题', questions[i]) and re.match(r'.*[单项选择题,填空题,简答题,综合应用题]', questions[i+1]) == None:
+                objectiveQuestionText = questions[i+1]
+
+        # convert stem
+        if singleQuestionText != '':
+            self.questionArray += self.parseQuestion(
+                singleQuestionText, SINGLE_CHOICE)
+        if fillQuestionText != '':
+            self.questionArray += self.parseQuestion(fillQuestionText, FILL_IN)
+        if answerQuestionText != '':
+            self.questionArray += self.parseQuestion(
+                answerQuestionText, ANSWER_QUESTION)
+        if objectiveQuestionText != '':
+            self.questionArray += self.parseQuestion(
+                objectiveQuestionText, OBJECTIVE_QUESTION)
+
+    def parseChapter(self):
+
+        # split question and answer
+        (questionText, answerText) = self.devideAnswerAndQuestion(self.chapterText)
+        # split question and parse them into questionArray
+        self.parseDiffQuestion(questionText)
+
+        # format single_choice_question's option
+        for single_choice in (question for question in self.questionArray if question.type == SINGLE_CHOICE):
+            single_choice.formatOptions()
+
+        # append answer
+        self.appendAnswer(answerText)
+
+        #print json.dumps(self.questionArray, default=lambda o: o.__dict__, sort_keys=True, indent=4, ensure_ascii=False)
+
+    def getQuestionArray(self):
+        return self.questionArray
+
+
+class Book:
+    chapters = []
+
+    def showChapter(self):
+        for i in range(len(self.chapters)):
+            print (self.chapters[i].chapterText)
+
+    # skip category and replace every line's picture to picture number
+    def parseChapter(self, wordFile):
+        # define parse status
+        parseStatus = 'unstart'
+        # define plain text as the content of chapter
+        chapterText = ''
+
+        # open the book file
+        fs = docx.Document(wordFile)
+        for line in fs.paragraphs:
+
+            line.text = parseLinePic(line)
+            # remove chinese "quanjiao"
+            line = line.text.decode().encode('utf-8') + '\n'
+            line = line.replace('\xa1\xa1', '')
+
+            # match empth line
+            if re.match(r'^\s*$', line):
+                continue
+            # match chapter
+            chapterIdm = re.match(r'\s*第(.*)章\s*', line)
+
+            # chapter title
+            if chapterIdm:
+                # if the parsing progress is started record the text
+                if parseStatus == 'start':
+                    self.chapters.append(Chapter(chapterText))
+                    chapterText = ''
+                parseStatus = 'start'
+            # normal line
+            else:
+                if parseStatus == 'start':
+                    chapterText += line
+
+        # finish the last chapter
+        self.chapters.append(Chapter(chapterText))
+        #print (chapterText)
+        chapterText = ''
+
+    def getChapters(self):
+        return self.chapters
+
+
+def main(path):
+    book = Book()
+    book.parseChapter(path)
+    # book.showChapter()
+    chapters = book.getChapters()
+    for i in range(len(chapters)):
+        chapters[i].parseChapter()
+        for question in chapters[i].getQuestionArray():
+            jsonObj  = question.formatQuestion()
+            questionJson =  json.dumps(jsonObj, default=lambda o: o.__dict__, sort_keys=True, indent=4, ensure_ascii=False)
+            print questionJson
+            if PUSH_DATA:
+                pushData(questionJson,QUESTION_ADD_URL)
+        return
+
+
+if __name__ == "__main__":
+    # main("./", "http://192.168.0.99:8882/api/v1/questions/add")
+    main('./computer_science.docx')
+    # main('./cp1.docx')
 
  
  ```
- 

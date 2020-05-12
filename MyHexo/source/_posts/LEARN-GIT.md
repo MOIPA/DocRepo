@@ -1,10 +1,8 @@
----
 title: git配置
-date: 2019-03-07 12:03:24
 tags: git
 categories: git
+date: 2019-03-07 12:03:24
 ---
-
 ## LEARN GIT  *through  [blog](https://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/0013743256916071d599b3aed534aaab22a0db6c4e07fd0000)*
 
 ----
@@ -84,6 +82,14 @@ linux: pacman -S git
 2. #### how to git clone 
 
    1. git clone http://github.com/MPOIA/javaEE
+   
+3. #### how to clone specific branch
+	
+   1. git clone -b "branch" "url"
+   
+4. #### how to pull specific branch
+	
+   1. git checkout -b 本地分支名 origin/远程分支名
 
 ### branches
    1. git checkout -b branchName(-b : create a branch and switch to it)
@@ -182,4 +188,3 @@ linux: pacman -S git
    1. ssh -t github.com  : denied
    2. solution : ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
    3. then git push -u origin master
-
