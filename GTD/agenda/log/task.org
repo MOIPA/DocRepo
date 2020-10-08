@@ -7,7 +7,7 @@
 #+TAGS:{ @Workplace(w) @Home(h) }
 
 <2020-10-08 Thu>--<2020-10-11 Sun>
-* TODO [#B] 这周开发 [1/5]                                       :@Workplace:
+* TODO [#B] 这周开发 [0/4]                                       :@Workplace:
 
 ** TODO [#A] 停电信息综合管控】+【建议在“配置”中针对“临时停电”、“故障停电”是否自动生成主动工单增加配置按钮。】
 DEADLINE: <2020-09-23 Wed> SCHEDULED: <2020-09-21 Mon>
@@ -30,12 +30,3 @@ DES:
  
 ** TODO [#A] 【停电信息综合管控】+【已经归档的停电信号还能接收新的停电信号，导致新的停电信号无法研判为新的停电事件
 - State "TODO"       from              [2020-09-21 Mon 18:10]
-  
-* TODO [#C] 这周学习 [0/2]
-- State "TODO"       from              [2020-09-28 Mon 10:05]
-  
-** 考研 完成数学
-- State "考研"       from              [2020-09-28 Mon 10:10]
-  
-** TODO 学习b站的vue视屏
-- State "TODO"       from              [2020-09-28 Mon 10:10]
