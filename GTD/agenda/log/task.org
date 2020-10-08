@@ -1,0 +1,47 @@
+-*-org-*-
+#+STARTUP: indent 
+#+STARTUP: showall
+#+STARTUP: lognotedone
+#+TYP_TODO: 考研(s!) |
+#+SEQ_TODO: PENDING(p!) TODO(t!) | DONE(d@/!) ABORT(a@/!)
+#+TAGS:{ @Workplace(w) @Home(h) }
+
+* TODO [#B] 这周开发 [1/5]                                       :@Workplace:
+
+** TODO [#A] 停电信息综合管控】+【建议在“配置”中针对“临时停电”、“故障停电”是否自动生成主动工单增加配置按钮。】
+DEADLINE: <2020-09-23 Wed> SCHEDULED: <2020-09-21 Mon>
+- State "TODO"       from              [2020-09-21 Mon 09:38]
+  
+DES:
+- [X] :前端ui
+- [X] :上传的时候参考其他配置，上传用户的地市org_id和配置
+- [ ] :参考手动生成主动工单，在commServer生成故障停电池的时候，读取数据库配置，看是否生成主动工单
+
+** TODO [#C] 晓杰：配变失电的详情页面增加一个短信发送按钮
+- State "TODO"       from              [2020-09-21 Mon 18:14]
+
+DES:
++ [ ] :前端判断，人员选择+模板选择，还剩点击发送事件没写
++ [ ] :后端接受，发送短信+发送短信记录，具体查看MsgTest被注释的方法
+ 
+** TODO [#B] 【停电信息综合管控】：针对临时停电、故障停电类型，增加【通知领导】的短信按钮，点击之后，弹出短信发送页面，供用户选择短信模板内容以及通知短信人员，点击发送按钮，完成短信通知。
+- State "TODO"       from              [2020-09-21 Mon 18:12]
+ 
+** TODO [#A] 【停电信息综合管控】+【已经归档的停电信号还能接收新的停电信号，导致新的停电信号无法研判为新的停电事件
+- State "TODO"       from              [2020-09-21 Mon 18:10]
+ 
+** DONE [#A] commServer站内故障研判过程为空的问题
+CLOSED: [2020-09-28 Mon 10:09]
+- State "DONE"       from "TODO"       [2020-09-28 Mon 10:09] \\
+  完成
+- State "TODO"       from              [2020-09-25 Fri 17:49]
+
+  
+* TODO [#C] 这周学习 [0/2]
+- State "TODO"       from              [2020-09-28 Mon 10:05]
+  
+** 考研 完成数学
+- State "考研"       from              [2020-09-28 Mon 10:10]
+  
+** TODO 学习b站的vue视屏
+- State "TODO"       from              [2020-09-28 Mon 10:10]
