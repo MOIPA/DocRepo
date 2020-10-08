@@ -1,1 +1,0 @@
-/home/tr/.emacs.d

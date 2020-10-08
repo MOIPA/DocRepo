@@ -1,0 +1,34 @@
+
+;; ----- smex-history -----
+(
+ eww
+ toggle-truncate-lines
+ org-agenda
+ evil-window-right
+ evil-window-left
+ evil-window-move-far-left
+ windmove-up
+)
+
+;; ----- smex-data -----
+(
+ (org-mode . 5)
+ (revert-buffer-with-coding-system . 3)
+ (help . 2)
+ (eww . 3)
+ (eww-reload . 1)
+ (helm-find-files . 1)
+ (org-babel-load-file . 1)
+ (package-refresh-contents . 1)
+ (package-list-packages . 3)
+ (org-edit-src-code . 4)
+ (org-indent-mode . 2)
+ (org-show-todo-tree . 1)
+ (org-agenda . 13)
+ (windmove-up . 2)
+ (evil-window-down . 1)
+ (evil-window-move-far-left . 1)
+ (evil-window-right . 2)
+ (evil-window-left . 1)
+ (toggle-truncate-lines . 5)
+)
