@@ -89,6 +89,7 @@ CLOSED: [2020-09-21 Mon 09:19] DEADLINE: <2020-09-17 Thu> SCHEDULED: <2020-09-17
 
 * 这周时间拿去玩ff14了 
 
+
 * <2021-09-21 Mon>--<2020-09-27 Sun>
 * TODO [#B] 开发任务 [8/8]                                       :@Workplace:
 
@@ -145,3 +146,15 @@ CLOSED: [2020-09-25 Fri 15:13]
 - State "TODO"       from              [2020-09-25 Fri 09:27]
 
 * 这周其他时间玩了ff14,背了点单词，开始学习数学
+
+
+<2021-09-28 Tue>--<2020-10-08 Thu>
+* TODO [#B] 这周开发 [1/1]                                       :@Workplace:
+** DONE [#A] commServer站内故障研判过程为空的问题
+CLOSED: [2020-09-28 Mon 10:09]
+- State "DONE"       from "TODO"       [2020-09-28 Mon 10:09] \\
+  完成
+- State "TODO"       from              [2020-09-25 Fri 17:49]
+
+ un>--<2020-11-08 Sun>
+* 周总结：回老家带了四天，小说中度过，2天陪女友，1日蹉跎
