@@ -50,6 +50,13 @@ date: 2019-07-25 11:02:00
     
 7. 集合的add和addall方法区别：add添加一个集合相当于添加对应集合的指针，addall方法在添加一个集合元素时，会将这个集合里面的元素添加进去。 
 
+##### 反射机制
+
+java文件被编译生成字节码后并不是直接进入内存，需要类加载器（ClassLoader加载），这个加载器引导类进入内存变为类对象，并且将类中的所有区域变为对象，比如成员变量变为`Filed\[] field`,构造方法变为`Constractor\[] cons`对象数组，成员方法变为`Method\[] methods`。
+
+那么反射就是可以直接操控类对象，获取Method里面的方法或者直接操作Filed内变量。比如IDE的代码自动提示，定义一个类`Person a`后，输入a会自动弹出后面的方法，这是因为IDE自动加载了`Person`类的字节码进入内存，获取里面的`Method`数组内的方法，从而展示在了弹窗中。
+
+反射最大的好处是解耦。
 
 #### java8
 
@@ -665,7 +672,11 @@ public class TestOptional {
 
 #### java8 接口新特性
 
+新增了接口的静态方法和default修饰方法。
+
 现在可以接口中实现默认方法，若一个类同时继承了某个同名方法类，且implements了这个接口，那么子类调用时，类优先。
+
+若两个接口都定义了getName()那么子类实现这两个接口的话会报错要求实现类必须实现方法，如果extends了一个类又实现了同名方法的接口，extends的类优先。
 
 ```java
 package com.Java8.TheInterface;
@@ -680,5 +691,11 @@ public interface IMyFun {
     default String getName() {
         return "hello";
     }
+    public static void show(){
+    	System.out.println("接口的静态方法");
+    }
 }
 ```
+
+#### Java的新的时间类
+
