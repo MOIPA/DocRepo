@@ -3,7 +3,7 @@ author: tr
 tags:
   - Python
 categories:
-  - 'Python '
+  - Python
 date: 2019-04-25 10:48:00
 ---
 ### python报错问题解决：'ascii' codec can't encode character

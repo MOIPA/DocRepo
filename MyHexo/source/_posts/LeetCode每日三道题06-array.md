@@ -1,7 +1,10 @@
 title: LeetCode每日三道题06 动态规划
 author: tr
-date: 2021-05-13 09:49:44
 tags:
+  - LeetCode
+categories:
+  - LeetCode
+date: 2021-05-13 09:49:00
 ---
 # Unique Paths
 
@@ -70,8 +73,9 @@ public class UniquePaths62 {
 
 思路：还是和上题一样，只不过每个节点算下和右和的时候如果有障碍物不算进去
 
+```
 leetcode 的eg真是佛了，还有输入{{0}}和{{1}}，{{0，0}，{0，1}}即起点在终点，终点被堵住这种情况。
-
+```
 
 ![upload successful](/images/pasted-64.png)
 ```java

@@ -1,9 +1,12 @@
-title: 从0到1创建整个web项目
+title: 从0到1完成前后端分离的web项目
 author: tr
-date: 2021-04-22 10:57:23
 tags:
+  - Spring
+categories:
+  - Sping
+date: 2018-04-22 10:57:00
 ---
-# 从0-1创建整个web项目
+# 从0到1完成前后端分离的web项目
 
 最简最少技术栈创建一个完整项目
 <!--more-->

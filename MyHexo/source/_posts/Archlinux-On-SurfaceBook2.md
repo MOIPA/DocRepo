@@ -275,7 +275,9 @@ SecureBoot原理，这东西的存在是为了防止在引导的时候被恶意�
 
 6. `refind-install --shim /usr/share/shim-signed/shimx64.efi --localkeys`：配置refind的shim keys目录，可以在/boot/efi/EFI/refind/keys存放内核的签名了。
 
-7. `sbsign --key /etc/refind.d/keys/refind_local.key --cert /etc/refind.d/keys/refind_local.crt --output /boot/vmlinuz-linux /boot/vmlinuz-linux`：可以在/boot/efi/EFI/refind/keys内看到签名，这里可以再执行几次签名其他自定义内核。
+7. `sbsign --key /etc/refind.d/keys/refind_local.key --cert /etc/refind.d/keys/refind_local.crt --output /boot/vmlinuz-linux /boot/vmlinuz-linux`：可以在/boot/efi/EFI/refind/keys内看到签名，这里可以再执行几次签名其他自定义内核，本质上是将启动的内核引导文件添加签名信息。
+
+NOTE: 实际可以不用添加key，直接refind启动界面，使用enroll hash，将/boot/vmlinuz-linux（或者其他内核文件）引入即可，系统启动bootloader，bootloader启动内核文件查看签名或者hash
 
 8. `reboot`：打开secureboot支持第三方（third party），重启。进入shim控制界面，选择`Enroll KEY`，点击文件系统，找到`/boot/efi/EFI/refind/keys/.....key` 确定添加，然后重启即可。
 

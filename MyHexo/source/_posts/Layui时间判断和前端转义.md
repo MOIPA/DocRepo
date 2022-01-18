@@ -3,7 +3,7 @@ author: tr
 tags:
   - LayUi
 categories:
-  - '>ayUi'
+  - LayUi
 date: 2020-06-09 11:23:00
 ---
 #### Layui 前端防止sql注入

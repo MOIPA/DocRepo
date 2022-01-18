@@ -1,8 +1,7 @@
 title: jenkins配置
-tags:
-  - jenkins
+tags: []
 categories:
-  - jenkins
+  - Jenkins
 author: tr
 date: 2019-03-22 18:06:00
 ---

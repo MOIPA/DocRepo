@@ -1,4 +1,4 @@
-title: LeetCode
+title: leet code 每日三道题 01 array+binary search
 author: tr
 tags:
   - LeetCode
