@@ -77,18 +77,6 @@ avatar: /images/tr.jpg
 #theme: yilia
 theme: next
 
-#Admin  url/admin
-#admin:
-#  username: tr
-#  password_hash: 08005166
-#  secret: tzq
-# hexo-admin authentification
-admin:
-  username: tr
-  password_hash: $2a$10$EzXtiahRLim1dS5uxmsKMe/KQD3pWrJPcIWOtv.1ofdvTQ6UfsPgK
-  secret: 0800
-  deployCommand: './hexo-deploy.sh' 
-
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -121,11 +109,12 @@ jsonContent:
 ### rss module
 Plugins: 
 - hexo-generate-feed
-#feed:
-#    type: atom
-#    path: atom.xml
-#    limit: 20
-#    hub:
-#    content:
-#    content_limit:
-#    content_limit_delim: ' '
+
+# hexo-admin authentification
+#admin:
+#  username: tr
+#  password_hash: $2a$10$EzXtiahRLim1dS5uxmsKMe/KQD3pWrJPcIWOtv.1ofdvTQ6UfsPgK
+#  secret: 0800
+#  deployCommand: './hexo-deploy.sh' 
+
+
