@@ -77,4 +77,9 @@ hexo migrate rss http://39.108.159.175:4000/atom.xml
 
 2. 将source/_posts文件夹改为git目录，文档从github上同步，在deploy脚本内写好git push的命令
 
-3. 每次新电脑只需要`docker pull moipa/hexo:2.x`到本地运行即可 
+3. 每次新电脑只需要`docker pull moipa/hexo:2.x`到本地运行即可
+
+4. 生成了hexo admin的key，再次使用的时候可能需要注释掉，重新去admin界面生成
+
+5. 自动同步（图片和文档）git脚本写好了，可以在配置好admin界面后将这个脚本加上去，之后只需要点击deploy即可完成部署
+![upload successful](/images/pasted-129.png)
