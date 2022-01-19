@@ -70,3 +70,11 @@ docker exec -it trhexo /bin/bash
 
 hexo migrate rss http://39.108.159.175:4000/atom.xml
 ```
+
+# 配置个人的专属hexo镜像
+
+1. 将linux的公钥私钥复制到镜像中
+
+2. 将source/_posts文件夹改为git目录，文档从github上同步，在deploy脚本内写好git push的命令
+
+3. 每次新电脑只需要`docker pull moipa/hexo:2.x`到本地运行即可 
