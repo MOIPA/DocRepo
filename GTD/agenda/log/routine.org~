@@ -1,0 +1,13 @@
+-*-org-*-
+#+STARTUP: indent 
+#+STARTUP: showall
+#+STARTUP: lognotedone
+#+TYP_TODO: 考研(s!) |
+#+SEQ_TODO: PENDING(p!) TODO(t!) | DONE(d@/!) ABORT(a@/!)
+#+TAGS:{ @Workplace(w) @Home(h) }
+
+* 考研 [#C] 每日英语单词100 
+SCHEDULED: <2020-09-07 Mon .+1d>
+:PROPERTIES:
+:CONTENT: 手机app不背单词
+:END:

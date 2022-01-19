@@ -1,0 +1,44 @@
+-*-org-*-
+#+STARTUP: indent 
+#+STARTUP: showall
+#+STARTUP: lognotedone
+#+TYP_TODO: 考研(s) |
+#+SEQ_TODO: PENDING(p!) TODO(t) | DONE(d) ABORT(a@/!)
+#+TAGS:{ @Workplace(w) @Home(h) }
+
+<2020-10-09 Thu>
+* TODO [#B] 今日todo [1/4]                                       :@Workplace:
+
+** DONE [#A] 上传linux的emacs配置和日志
+CLOSED: [2020-10-08 Thu 23:29] SCHEDULED: <2020-10-09 Fri> DEADLINE: <2020-10-09 Fri>
+- State "DONE"       from "DONE"       [2020-10-08 Thu 23:29]
+
+** TODO [#B] 背诵单词80 [50%]                                        :@Home:
+- State "TODO"       from              [2020-10-08 Thu 23:30]
+*** DONE [#B] 复习单词
+CLOSED: [2020-10-09 Fri 09:40]
+- State "DONE"       from "TODO"       [2020-10-09 Fri 09:40]
+*** TODO [#B] 学习新单词四组 [0%]
+**** TODO 第一组
+**** TODO 第二组
+**** TODO 第三组
+**** TODO 第四组
+  
+** TODO [#B] 完成汤家凤视频8个                                       :@Home:
+- State "TODO"       from              [2020-10-08 Thu 23:30]
+
+** TODO [#A] 完成当日工作task.org                               :@Workplace:
+- State "TODO"       from              [2020-10-08 Thu 23:31]
+
+* 今日番茄时间
+
+** TODO 第一番茄周期 [1/4]
+*** DONE 1
+*** TODO 2
+*** TODO 3
+*** TODO 4
+** TODO 第二番茄周期 [0/4]
+*** TODO 1
+*** TODO 2
+*** TODO 3
+*** TODO 4
