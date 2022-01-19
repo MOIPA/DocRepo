@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="Python,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico?v=5.1.2">
+
+
+
+
+
+
+<meta name="description" content="python语法 1、python对大小写敏感  定义变量始终使用小写，true或false这种特殊关键字开头大写  2、引号使用  ①三引号可定义分开的字符串  course = &amp;apos;&amp;apos;&amp;apos; hi john here is your first email  thank you &amp;apos;&amp;apos;&amp;apos;  print(course)  ②单引号套双引号  c">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python">
+<meta property="og:url" content="http://yoursite.com/2020/05/09/python/index.html">
+<meta property="og:site_name" content="TrBlog">
+<meta property="og:description" content="python语法 1、python对大小写敏感  定义变量始终使用小写，true或false这种特殊关键字开头大写  2、引号使用  ①三引号可定义分开的字符串  course = &amp;apos;&amp;apos;&amp;apos; hi john here is your first email  thank you &amp;apos;&amp;apos;&amp;apos;  print(course)  ②单引号套双引号  c">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-06-11T08:24:37.548Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python">
+<meta name="twitter:description" content="python语法 1、python对大小写敏感  定义变量始终使用小写，true或false这种特殊关键字开头大写  2、引号使用  ①三引号可定义分开的字符串  course = &amp;apos;&amp;apos;&amp;apos; hi john here is your first email  thank you &amp;apos;&amp;apos;&amp;apos;  print(course)  ②单引号套双引号  c">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/05/09/python/">
+
+
+
+
+
+  <title>python | TrBlog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">TrBlog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/09/python/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="tr">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/tr.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="TrBlog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">python</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-09T19:24:00+08:00">
+                2020-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="python语法"><a href="#python语法" class="headerlink" title="python语法"></a>python语法</h3><hr>
+<p>1、python对大小写敏感</p>
+<p> 定义变量始终使用小写，true或false这种特殊关键字开头大写</p>
+<hr>
+<p>2、引号使用</p>
+<p> ①三引号可定义分开的字符串</p>
+<pre><code> course = &apos;&apos;&apos;
+hi john
+here is your first email
+
+thank you
+&apos;&apos;&apos;
+
+print(course)
+</code></pre><p> ②单引号套双引号</p>
+<pre><code> course = &apos;python for &quot;beginners&quot;&apos;
+print(course)
+</code></pre><p>输出python for “beginners”    </p>
+<p>③双引号套单引号</p>
+<pre><code>course = &quot;python&apos;s beginners&quot;
+print(course)
+</code></pre><p>输出python’s beginners</p>
+<hr>
+<p>3、索引</p>
+<p>①负指数索引</p>
+<pre><code>course = &quot;python for beginners&quot;
+print(course[-1])
+</code></pre><p>输出s</p>
+<p>②</p>
+<pre><code>course = &quot;python for beginners&quot;
+print(course[0:3])
+</code></pre><p>输出pyt (排除字符和索引3)</p>
+<p>③</p>
+<p>course = “python for beginners”<br>    print(course[:])<br>输出python for beginners（默认索引全部）</p>
+<p>④</p>
+<pre><code>name=&apos;jennifer&apos;
+print(name[1:-1])
+</code></pre><p>输出ennife</p>
+<hr>
+<p>4、花括号定义占位符 打了f以后，引号里的内容会被直接输出，加上花括号可以保证像first这种定义量可以输出你给的赋值</p>
+<pre><code>msg=f&apos;{first} [{last}] is a coder
+print(msg)
+</code></pre><p>输出john [smith] is a coder</p>
+<p>format格式化函数</p>
+<pre><code>my_list = [&apos;菜鸟教程&apos;, &apos;www.runoob.com&apos;]
+print(&quot;网站名：{0[0]}, 地址 {0[1]}&quot;.format(my_list))  # &quot;0&quot; 是必须的
+</code></pre><p> 输出 网站名：菜鸟教程, 地址 <a href="http://www.runoob.com" target="_blank" rel="noopener">www.runoob.com</a></p>
+<hr>
+<p> 5、替换字符</p>
+<pre><code> course=&apos;python for beginners&apos;
+print(course.replace(&apos;beginners&apos;,&apos;absolute beginners&apos;))
+</code></pre><p>输出python for absolute beginners</p>
+<hr>
+<p>6、find方法 返回字符或字符序列（find大小写敏感）</p>
+<pre><code>course=&apos;python for beginners&apos;
+print(course.find(&apos;beginners&apos;))
+</code></pre><p>输出11</p>
+<hr>
+<p>7、in 产生布尔值的</p>
+<pre><code>course=&apos;python for beginners&apos;
+print(&apos;python&apos; in course)
+</code></pre><p>输出true</p>
+<hr>
+<p>8、运算</p>
+<p>①除法返回整数</p>
+<pre><code>print(10 // 3)
+</code></pre><p>输出3</p>
+<p>②除法</p>
+<pre><code>print（10 / 3）
+</code></pre><p>输出3.33333</p>
+<p>③除法返回余数</p>
+<pre><code>print（10 % 3）
+</code></pre><p>输出1（返回余数）</p>
+<p>④立方</p>
+<pre><code>print(10 **3)
+</code></pre><p>输出1000</p>
+<p>⑤增广赋值运算</p>
+<pre><code>x=10
+x-=3
+print(x)
+</code></pre><hr>
+<p>9、一些内置函数</p>
+<p>①round</p>
+<pre><code>x=2.4
+print(round(x))
+</code></pre><p>输出2（四舍五入）</p>
+<p>②abs绝对值</p>
+<pre><code>print(abs(-2.9))
+</code></pre><p>输出2.9</p>
+<hr>
+<p>10、引入模块</p>
+<pre><code>import math
+print(math.ceil(2.9))
+</code></pre><p>输出3（ceil向上取整，floor向下取整）</p>
+<hr>
+<p>11、if语句</p>
+<pre><code>is_hot=False
+is_cold=False
+if is_hot:
+    print(&quot;it&apos;s a hot day&quot;)
+    print(&apos;drink plenty of water&apos;)
+elif is_cold:
+    print(&quot;it&apos;s a cold day&quot;)
+    print(&quot;wear warm clothes&quot;)
+else:
+    print(&quot;it&apos;s a lovely day&quot;)
+print(&quot;enjoy your day&quot;)   //按shift加tab缩进
+</code></pre><p>输出it’s a lovely day</p>
+<p>enjoy your day</p>
+<hr>
+<p>12、逻辑运算符：and、or、not</p>
+<pre><code>has_high_income=True
+has_criminal_record=False
+
+if has_high_income and not has_criminal_record:
+    print(&quot;eligible for loan&quot;)
+</code></pre><hr>
+<p> 13、列表</p>
+<p>① 添加</p>
+<pre><code>matrix.append([10,11,12])
+</code></pre><p>② 插入</p>
+<pre><code>number.insert(0,6)  //0是插入位置，6是插入数字
+</code></pre><p>③ 移除</p>
+<pre><code> number=[5,3,7,2,9]
+number.remove(5)
+</code></pre><p>④清除所有</p>
+<pre><code>number.clear()
+</code></pre><p>⑤删除列表最后一项</p>
+<pre><code>number.pop()
+</code></pre><p>⑥ 索引位置</p>
+<pre><code> number=[5,3,7,2,9]
+print(number.index(7))
+</code></pre><p> ⑦检查字符串中是否存在该字符</p>
+<pre><code> number=[5,3,7,2,9]
+print(50 in number)
+</code></pre><p> 输出False</p>
+<p> ⑧列表排序</p>
+<pre><code> number=[5,3,7,2,9]
+number.sort()   //reverse逆序
+print(number)
+</code></pre><p> ⑨复制</p>
+<pre><code> number=[5,3,7,2,9]
+number2=number.copy()
+number.append(10)
+print(number2)
+</code></pre><p> 输出[5, 3, 7, 2, 9]</p>
+<p> ⑩删除列表中重复数字</p>
+<pre><code> numbers=[2,9,2,4,6,5,8,7,9]
+uniques=[]
+for number in numbers:
+    if number not in uniques:
+        uniques.append(number)
+print(uniques)
+</code></pre><hr>
+<p> 14、元组  不可改变</p>
+<pre><code> numbers=(2,5,8)
+print(numbers[0])
+</code></pre><hr>
+<p>  15、解压缩（可适用于元组和列表）</p>
+<pre><code>x,y,z=coordinate 可以代替x=coordinate[0]
+                          y=coordinate[1]
+                          z=coordinate[2]
+</code></pre><hr>
+<p>16、字典</p>
+<p>①</p>
+<pre><code>customer={
+&quot;name&quot;:&quot;tzq&quot;,
+&quot;age&quot;:23,
+&quot;is_verified&quot;:True
+}
+print(customer[&quot;name&quot;])
+</code></pre><p>   如果用get方法print(customer.get(“birthdate”))</p>
+<p>  输出none</p>
+<p>  print(customer.get(“birthdate”,”Jan 1 1980”))设置默认值</p>
+<p>②将输入数字转变成英文输出</p>
+<pre><code> phone=input(&quot;phone:&quot;)
+digital_mapping={
+&quot;1&quot;:&quot;One&quot;,
+&quot;2&quot;:&quot;Two&quot;,
+&quot;3&quot;:&quot;Three&quot;,
+&quot;4&quot;:&quot;Four&quot;,
+&quot;5&quot;:&quot;Five&quot;,
+&quot;6&quot;:&quot;Six&quot;,
+&quot;7&quot;:&quot;Seven&quot;,
+&quot;8&quot;:&quot;Eight&quot;,
+&quot;9&quot;:&quot;Nine&quot;,
+&quot;0&quot;:&quot;Zero&quot;
+}
+output=&quot;&quot;
+for ch in phone:
+    output+=digital_mapping.get(ch)+&quot; &quot;
+print(output)
+</code></pre><hr>
+<p> 17、创建函数 </p>
+<p> 关键字参数</p>
+<pre><code>def cal_cost(total=50,shipping=10,discount=0.1):
+</code></pre><p> 函数使用</p>
+<pre><code> def emoji_converter(message):
+    words=message.split(&quot; &quot;)
+    emojis={
+    &quot;:)&quot;:&quot;😊&quot;,
+    &quot;:(&quot;:&quot;😢&quot;
+    }
+    output=&quot;&quot;
+    for word in words:
+        output+=emojis.get(word,word)+&quot; &quot;
+    return output
+
+message=input(&quot;&gt;&quot;)
+result=emoji_converter(message)
+print(result)
+</code></pre><p> 18、错误处理</p>
+<pre><code> try:
+    age=int(input(&apos;age:&apos;))
+    print(age)
+
+except ValueError:
+    print(&apos;invalid value&apos;)
+</code></pre><p> 19、类</p>
+<pre><code> class Point:
+def move(self):
+    print(&quot;move&quot;)
+def draw(self):
+    print(&apos;draw&apos;)
+
+point1=Point()
+point1.draw()
+</code></pre><hr>
+<p>20、构造函数</p>
+<pre><code>class Person:
+def __init__(self,name):
+    self.name=name
+def talk(self):
+    print(f&apos;hi, i am {self.name}&apos;)
+
+john=Person(&quot;john smith&quot;)
+john.talk()
+
+bob=Person(&quot;bob smith&quot;)
+bob.talk()
+</code></pre><hr>
+<p> 21、继承（空类里写pass）</p>
+<pre><code> class Mammal:
+    def walk(self):
+        print(&quot;walk&quot;)
+
+class Dog(Mammal):
+    pass
+class Cat(Mammal):
+    pass
+</code></pre><p>22、导入模块</p>
+<pre><code>import converters
+from converters import kg_to_lbs  （导入模块的函数）
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/08/内外网配置/" rel="next" title="win10 内外网双网卡配置">
+                <i class="fa fa-chevron-left"></i> win10 内外网双网卡配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/12/Intellij-idea实用配置和快捷键/" rel="prev" title="Intellij idea实用配置和快捷键">
+                Intellij idea实用配置和快捷键 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/images/tr.jpg" alt="tr">
+          <p class="site-author-name" itemprop="name">tr</p>
+           
+              <p class="site-description motion-element" itemprop="description">talk is cheap , show me the code.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">120</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">42</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">62</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://www.github.com/MOIPA/" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://wenxuan.wtf" title="WWX" target="_blank">WWX</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#python语法"><span class="nav-number">1.</span> <span class="nav-text">python语法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">tr</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
