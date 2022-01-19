@@ -89,3 +89,5 @@ hexo migrate rss http://39.108.159.175:4000/atom.xml
 1. 镜像文件版本2.2，docker pull下载后即可使用
 
 2. admin界面写日志，deploy按钮即可同步git
+
+3. 需要注意的是最好记住自己哪些日志可能冲突，需要提前同步一下，否则出现冲突要么自己merge conflict，要么重建容器
