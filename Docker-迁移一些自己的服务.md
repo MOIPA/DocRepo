@@ -71,7 +71,7 @@ docker exec -it trhexo /bin/bash
 hexo migrate rss http://39.108.159.175:4000/atom.xml
 ```
 
-# 配置个人的专属hexo镜像
+### 配置个人的专属hexo镜像
 
 1. 将linux的公钥私钥复制到镜像中
 
@@ -83,3 +83,9 @@ hexo migrate rss http://39.108.159.175:4000/atom.xml
 
 5. 自动同步（图片和文档）git脚本写好了，可以在配置好admin界面后将这个脚本加上去，之后只需要点击deploy即可完成部署
 ![upload successful](/images/pasted-129.png)
+
+### 镜像说明
+
+1. 镜像文件版本2.2，docker pull下载后即可使用
+
+2. admin界面写日志，deploy按钮即可同步git
