@@ -1,4 +1,4 @@
-title: ArchLinux安装配置
+title: ArchLinux 安装 + 大部分的软件配置
 author: tr
 tags:
   - Linux
@@ -495,6 +495,10 @@ $ makepkg -si
 
 ![upload successful](/images/pasted-140.png)
 
+#### 强烈推荐的插件 
+
+ddterm ：最好用的drop down terminal
+
 ### 安装aria2下载器
 
 安装下载器：`pacman -S aria2`
@@ -902,3 +906,58 @@ X-Deepin-Vendor=user-custom
 ```
 
 然后程序列表就有了
+
+## 配置虚拟机
+
+### boxes
+
+> gnome桌面自带了boxes软件，这个软件真的很方便，但是简化的过头了，导致用户无法配置网络
+
+> boxes的使用就不说了，点开一目了然，这里推荐如何高级配置boxes内的虚拟机
+
+1. 下载 virt-manager
+
+2. 打开软件点击 `file` `add connection`选择如下，点击链接
+
+![upload successful](/images/pasted-149.png)
+
+![upload successful](/images/pasted-151.png)
+
+3. 点击页面即可
+
+### virtual machine（推荐）
+
+这是专业点的软件，可以配置修改很多东西
+
+```shell
+# 安装虚拟机内核
+sudo pacman -S virtualbox-host-modules-arch
+# 安装虚拟机软件
+pacman -S virtualbox
+# 安装后不重启需要手动加载内核
+sudo modprobe vboxnetadp
+sudo modprobe vboxnetflt
+sudo modprobe vboxnetpci
+sudo modprobe vboxpci
+```
+
+> 打开虚拟机使用的时候要注意提供的网络模式
+> + host-only 绑定虚拟网卡，需要用户手动创建网卡
+> + nat 网络地址转换，可以上网，但是宿主机和虚拟机无法互通（互通需要设置，建议看archlinux文档）
+> + bridge 桥接模式，使用一张网卡（可以是虚拟网卡）分配地址，可以和宿主机互通，但是如果网卡不是混合模式是无法上网的
+
+最好的既可以上网又可以和宿主机互通的方式如下设置：
+
+1. 创建host-only的虚拟网卡
+
+![upload successful](/images/pasted-152.png)
+
+2. 关闭虚拟机，将两个网卡（虚拟网卡，和nat模式网卡）配置上即可
+
+![upload successful](/images/pasted-153.png)
+
+![upload successful](/images/pasted-154.png)
+
+![upload successful](/images/pasted-157.png)
+
+![upload successful](/images/pasted-156.png)
