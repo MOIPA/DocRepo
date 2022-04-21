@@ -2,7 +2,8 @@ title: Go Lang Basic
 author: tr
 tags:
   - Go
-categories: []
+categories:
+  - Go
 date: 2022-04-12 09:26:00
 ---
 ## GO
@@ -94,6 +95,23 @@ func main() {
 ```
 
 ### go的变量定义和声明
+
+> go的变量有很多
+>
+```go
+int8
+int16
+int32
+int64
+
+unit: 和int一样 只不过只能存储正数，所以占用空间少一半
+unit8
+unit16
+unit32
+unit64
+
+float32 :除了float64还有32位的版本
+```
 
 ```go
 package main
@@ -191,6 +209,55 @@ func main() {
  replacer := strings.NewReplacer("#","o")
  fixed := replacer.Replace(broken)
  fmt.Println(fixed)
+}
+```
+
+
+### GO 在if中初始化
+
+> `err := myFunc()` 错误时常会有，有的时候我们会忘记`err`的定义是否要加上`:`，但是实际上`err`很快只用来if判断是否出错，随后就不在使用，这时我们可以在if中直接初始化`err`
+>
+
+```go
+if err:=myFunc(); err!=nil{
+	log.Fatal(err)
+}
+```
+
+### GO 的switch
+
+> switch 自动加上break，如果要继续往下，加上`fallthrough`
+
+```go
+	val := 10
+
+	switch val {
+	case 1:
+		fmt.Println("1")
+	case 2:
+		fmt.Println("2")
+		fallthrough
+	case 3:
+		fmt.Println("3")
+	}
+```
+
+### GO 字符
+
+> GO 使用`utf8`编码，当我们使用`len(myStr)`的时候，返回的是字符串的字节数，而不是字符个数，需要反映字符个数用：`utf8.RuneCountInString(myStr)`
+>
+> 如果想要处理字符串，处理里面的单个字符，GO提供了字符串到字符slice的转换
+>
+
+```go
+ strRunes := []rune(myStr) // 字符串转slice
+ str := string(strRunes) // slice 转字符串
+```
+
+> 用for遍历字符串
+
+```go
+for position,c := range myStr{
 }
 ```
 
